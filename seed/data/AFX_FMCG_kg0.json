@@ -1,0 +1,4339 @@
+{
+  "domains": [
+    {
+      "code": "RTM",
+      "key": "rtm",
+      "slug": "sales-distribution-rtm",
+      "name": "01 Sales & Distribution (RtM)",
+      "sort_order": 1,
+      "color": "#2E6FCA",
+      "description": "Field force execution, route-to-market, distributor hierarchies, beat planning & secondary sales analytics.",
+      "scope": "Route-to-market (RtM) execution covering indirect distributors/wholesalers, field force sales reps, coverage planning (TCP/TCR), assortment planning (SAO/SAT), trade-channel incentives (TCI/CIP), retail audits, suggested order quantities (SOQ), and order processing.",
+      "knowledge": {
+        "Concepts & processes": [
+          {
+            "heading": "01 Sales & Distribution (RtM) Core Entities & Mechanics",
+            "items": [
+              {
+                "title": "Distributor / Wholesaler",
+                "text": "The indirect-RtM intermediary carrying the three sales flows: primary (manufacturer→distributor, sell-in), secondary (distributor→outlet, sell-out), tertiary (outlet→consumer). (Attributes: distributorId, type (WS/distributor, multi-layer), marginStructure, warehouses[], servedOutlets[], dcRdcPlantMapping... Evidence: food major TM&D analytics + a distributor-reporting platform RFP · bakery group / diversified manufacturer secondary-sales model · tobacco major DSS workstream)"
+              },
+              {
+                "title": "FieldForceRep",
+                "text": "The field seller/merchandiser. Call economics derived per rep: productive-call %, average vs break-even drop size, plan/route/time-standard adherence. (Attributes: repId, ffType (promptSales/preSales/TMR/merchandiser/telesales), supervisor, depot, skillGrade, handheldId... Evidence: field performance-management model · TMD KPIs · salesforce-incentive deck)"
+              },
+              {
+                "title": "CoveragePlan (TCP / TCR)",
+                "text": "Decides who visits which outlet how often. TCP sets universe/FF-type/frequency; TCR is the periodic capacity-vs-demand review consolidating workload from coverage, assortment, media and incentive plans with scenario levers. (Attributes: outletUniverse, coveredFlag, ffTypeAssignment, callFrequency, callType, workloadMinutes... Evidence: SAO Toolkit · TCR Final process flow · trade-planning analysis deck)"
+              },
+              {
+                "title": "AssortmentPlan (SAO / SAT)",
+                "text": "Check→Plan→Act assortment object: core range / must-stock lists by outlet cluster, target distribution by SKU, rationalization; SAT is the outlet-level target whose achievement is SAT compliance %. (Attributes: outletCluster, skuCapacityByVolumeClass, coreRange[], mustStockList[], targetDistributionBySku, delistings[]... Evidence: SAO Toolkit (+ SKU Distribution Optimiser & Assortment Generator))"
+              },
+              {
+                "title": "CallVisit",
+                "text": "The atomic execution event: activities executing plans, surveys, stock count, audit, order capture — with GPS stamp and productive/partial/unproductive outcome. (Attributes: callId, plannedFlag/adHoc, callType, activities[], surveysTaken[], stockCount[]... Evidence: trade-execution scope document · Execution@Outlet user journey · tobacco major Data Dictionary (Call, Survey suite))"
+              },
+              {
+                "title": "RetailAudit",
+                "text": "Per product × outlet × date: isDistributed, isAvailable (→ OOS derived), facings, POSM inventory, planogram compliance, observed RSP (→ price-compliance index). External twin: Nielsen retail audit. (Attributes: isDistributed, isAvailable, numFacings, posmInventory[], planogramComplianceFlag, photoAuditRef... Evidence: tobacco major Data Dictionary Retail Audit entity · TMD KPI definitions · Indian FMCG major MT OOS/SOS audit facts)"
+              },
+              {
+                "title": "SuggestedOrder (SOQ)",
+                "text": "Recommendation object: baseline forecast + collaborative-filtering order enhancement → suggested quantity; tracked via acceptance, execution rate, serviceability (~85% baseline accuracy reported). (Attributes: baselineForecast, orderEnhancement, suggestedQty, acceptanceFlag, executionRate, serviceability... Evidence: HPC major S&M analytics deck (AOP/ASOP) · field performance-management model)"
+              },
+              {
+                "title": "TradeInvestment (TCI) / IncentiveScheme (CIS)",
+                "text": "The customer-facing money: front margin (customer's earn) + back-margin buckets; SONA and CROI derived. CIS: outlet-level incentive schemes with PfP/PfC buckets, enrolment, reward ledger, disputes. (Attributes: frontMargin, backMarginBuckets[], perMille, pctOfCptoNetOfTax, sona, croiIndex... Evidence: legacy trade-platform customer scorecard · trade-terms policy manual · CIS PfP/PfC KPI sub-catalog · B2B Engagement Platform requirements)"
+              }
+            ],
+            "tables": [],
+            "notes": [
+              "Governed scope: Route-to-market (RtM) execution covering indirect distributors/wholesalers, field force sales reps, coverage planning (TCP/TCR), assortment planning (SAO/SAT), trade-channel incentives (TCI/CIP), retail audits, suggested order quantities (SOQ), and order processing."
+            ]
+          }
+        ]
+      },
+      "knowledge_evidence": "Evidenced across tobacco major DSS workstreams, beverage bottler Outlet Data Solutions, and bakery group secondary-sales models."
+    },
+    {
+      "code": "TRADE",
+      "key": "trade",
+      "slug": "trade-promotions-rgm",
+      "name": "02 Trade, Promotions & RGM",
+      "sort_order": 2,
+      "color": "#8A4FD0",
+      "description": "Trade promotion management (TPM), revenue growth management (RGM), funds, deals, deductions & claims.",
+      "scope": "Trade promotion planning and closed-loop execution: joint account planning, promotion calendars, deal creation, trade funds & budgets, price lists & dead nets, lift models & promo elasticity, short-pay deductions and claim settlement.",
+      "knowledge": {
+        "Concepts & processes": [
+          {
+            "heading": "02 Trade, Promotions & RGM Core Entities & Mechanics",
+            "items": [
+              {
+                "title": "AccountPlan",
+                "text": "Keyed planning account × brand × year; parent of promotions. Carries volume method (demand-planning baseline / % historic shipments / manual), loaded targets, plan rates, shipment-drop profiles and the approval state model. (Attributes: volumeMethod (B&I Gold/Silver/TVP), tfaTargets (growth%, grossSales$, tradeRate%, slotting$), planRates (sraRate, cashDiscountRate), shipmentDropProfile, stateModel... Evidence: HPC-major TPM program Account Plan/Checkbook/SVP design · consumer-products manufacturer TPM manual)"
+              },
+              {
+                "title": "Promotion",
+                "text": "The promo event: status lifecycle Draft→Submitted→Planned→Committed→Closed with re-approval on budget breach; tactics; uplift% sourced from lift tables/TPO/manual; grain header→MPG→UPC-week; dead-net-price guardrail. (Attributes: promotionId, status, performanceDates, shipmentDates, promotionType, tactics[] (TPR/display/feature/slotting/overlay)... Evidence: consumer-products manufacturer + the TPM program promotion-planning requirements · beauty major EMEA RFP)"
+              },
+              {
+                "title": "Deal",
+                "text": "Settlement-facing child of a promotion: variable (off-invoice, bill-back, scan) or fixed (feature, display, slotting, overlay); cost = volume × rate × redemption% or lump sum; identifies the fund/GL it spends against. (Attributes: dealType (variable/fixed), subType, level (header/MPG/SKU), estimatedCost, actualCost, redemptionPct... Evidence: the TPM program Deals & Settlements design · consumer-products manufacturer deductions requirements)"
+              },
+              {
+                "title": "TradeFund / Checkbook",
+                "text": "Budget container mapped to GL codes with the lifecycle Budget → Planned → Committed → Expended → Free Balance (= budget − committed − expended); live accruals convert liability to expense on shipment; kept open ~1yr post plan-year. (Attributes: fundId, fundType (fixed/accrual), parentChildWithReserve, spendCategories[]→glAccounts, freeBalance, liveAccrualForecast... Evidence: consumer-products manufacturer Fund Management requirements · the TPM program checkbook design)"
+              },
+              {
+                "title": "Deduction",
+                "text": "AR event — customer short-pays an invoice; matched to deals via resolutions (deal/no-deal), performance date must fall inside the deal window, reason code ties to GL; small deductions auto write-off; repay link for invalid ones. (Attributes: deductionCode, amount, status, reasonCode→glAccount, resolutions[], performanceDate... Evidence: consumer-products manufacturer Deductions/Claims/Settlement requirements · TPM-program as-built)"
+              },
+              {
+                "title": "Claim / CheckRequest",
+                "text": "Customer- or broker-submitted settlement with deal and no-deal payments; remaining amount = request − deal − no-deal; SAP check/credit-memo round-trip; post-audit and pre-pay variants. (Attributes: claimId, claimType, payments[] (deal/noDeal), remainingAmount, sapCheckNo, creditMemoNo... Evidence: consumer-products manufacturer + the TPM program settlement requirements)"
+              },
+              {
+                "title": "PriceList / ADL",
+                "text": "Single list price + COGS + dead-net floors per country/division; ADL = account × product intersection carrying retail price, distribution flags with effective dates and store counts per GTIN (drives %ACV). (Attributes: listPrice, cogs, deadNetPriceEdla, deadNetPriceScan, adl: retailPrice, inOutDistributionFlags... Evidence: TPM-program requirements · beauty major price-group spec)"
+              },
+              {
+                "title": "LiftModel / TPO",
+                "text": "The econometric object: log-log mixed-effects demand model decomposing sales into base / trade promo / consumer promo / competition / halo / cannibalization; true lift & true ROI; what-if simulators and scheme recommendation engines. (Attributes: modelForm (log-log mixed effects), decomposition[], trueLift, trueRoi, whatIfSimulator, schemeRecommender (genetic algo, Lagrange slabs)... Evidence: global brewer TPO approach · beverage bottler Trade Analytics · smokeless-tobacco company workshop)"
+              },
+              {
+                "title": "GrossToNetWaterfall",
+                "text": "The revenue-side P&L contract between the commercial domains and finance. Three verbatim instances: beer (GT → duty → conditional/unconditional discounts → NT), HPC (GS → SRA → trade → realized → net → GP → marketing profit), tobacco (CPTO net of tax → TCI → supplier share). (Attributes: waterfallInstance (beer/HPC/tobacco), lineItems[], conditionalVsUnconditional, sraSubtotal, totalTrade, realizedSales... Evidence: High Level PnL Structure xlsx · HPC major Customer Profitability reference · tobacco major trade-terms policy manual)"
+              }
+            ],
+            "tables": [],
+            "notes": [
+              "Governed scope: Trade promotion planning and closed-loop execution: joint account planning, promotion calendars, deal creation, trade funds & budgets, price lists & dead nets, lift models & promo elasticity, short-pay deductions and claim settlement."
+            ]
+          }
+        ]
+      },
+      "knowledge_evidence": "Evidenced by global TPM solution blueprints, consumer goods trade-transformation models, and retailer deduction clearing workstreams."
+    },
+    {
+      "code": "MKT",
+      "key": "marketing",
+      "slug": "marketing-consumer",
+      "name": "03 Marketing & Consumer",
+      "sort_order": 3,
+      "color": "#C05A9E",
+      "description": "Consumer data platform (CDP), consumer segmentation, campaign execution, media spend & market research.",
+      "scope": "Consumer-centric growth engine: multi-source data ingestion, CDP identity resolution, consumer profiles, micro-segmentation, personalized campaigns, media touchpoint mix and continuous consumer research hypothesis loops.",
+      "knowledge": {
+        "Concepts & processes": [
+          {
+            "heading": "03 Marketing & Consumer Core Entities & Mechanics",
+            "items": [
+              {
+                "title": "Consumer / LoyaltyMember",
+                "text": "The end consumer with identity, demographics, contactability, tier and points; scored with engagement, share of wallet, churn propensity, NPS, LTV; ~68-column physical schema evidenced. (Attributes: customerId, loyaltyId, demographics, contactabilityFlags, tier, pointsBalance... Evidence: Shopperinsight customer attributes · CVM Data Dictionary · persona decks)"
+              },
+              {
+                "title": "Segment / Persona",
+                "text": "Segment: typed (value/behaviour/attitude) with parameters, centroids and archived assignments. Persona: narrative instance on micro-segments with propensity-score matching, evolution stages and functional/emotional needs; white-space method exposes underserved segments. (Attributes: segmentId, segmentType, parameters, centroid, archivedAssignments[], referencePersona... Evidence: CVM data model · Persona Development Approach · a vaping product line lifecycle · brewer beer personas)"
+              },
+              {
+                "title": "Campaign",
+                "text": "Hierarchy Marketing Plan → Program → Stage → Campaign → Wave → Offer → Communication → Response; measured TG-vs-CG with incremental response/spend, cost and ROI; contact-fatigue rules. (Attributes: objective, targetGroup/controlGroup/referenceGroup, channel, sourceCode, wave, offer... Evidence: Shopper Insights user guide · CVM metrics workbook)"
+              },
+              {
+                "title": "Touchpoint / MediaSpend",
+                "text": "Channel taxonomy (paid/owned/earned × ATL/BTL/TTL × digital × physical) and the Nielsen-style spend record: market → advertiser → category → product → media → network → outlet × period, with companion TRP data. (Attributes: channelClass (paid/owned/earned), atlBtlTtl, mediaType, network, outlet (title/station), spend... Evidence: oral-care major media-spend & TRP samples · Traditional ATL/BTL deck · MPM KPI catalogue)"
+              },
+              {
+                "title": "CDPProfile / IdentityKey",
+                "text": "Identity resolution: hard keys (phone, email), private keys (cookie, device), soft keys (name, address, IP), unmatched pool re-matched later; pipeline sources → match → unified store → segmentation → activation/syndication. CDP ≠ DMP ≠ CRM distinctions evidenced. (Attributes: hardKeys, privateKeys, softKeys, unmatchedPool, unifiedProfileStore, activationSyndication (DMP/DSP/CRM)... Evidence: Indian FMCG major CDP Technical Solution Design (AWS) · CDP assessment framework · a web-personalization CDP data model)"
+              },
+              {
+                "title": "MarketResearch / SocialSignal",
+                "text": "MR study objects (U&A, concept test, conjoint/MaxDiff/TURF, NPS, brand equity) across the product lifecycle; social listening signals (mentions, sentiment, influencers, crisis alerts) as command-center consumables. (Attributes: studyType, mode (online/phone/F2F), lifecycleStage, panelSource (Nielsen/IRI/Kantar), mentions, sentiment... Evidence: Market Research Overview · a social-listening platform · Rapid Insight hypothesis library)"
+              }
+            ],
+            "tables": [],
+            "notes": [
+              "Governed scope: Consumer-centric growth engine: multi-source data ingestion, CDP identity resolution, consumer profiles, micro-segmentation, personalized campaigns, media touchpoint mix and continuous consumer research hypothesis loops."
+            ]
+          }
+        ]
+      },
+      "knowledge_evidence": "Grounded in HPC consumer insights repositories, beverage brand tracking frameworks, and digital marketing return models."
+    },
+    {
+      "code": "SCM",
+      "key": "supply",
+      "slug": "supply-chain-procurement",
+      "name": "04 Supply Chain & Procurement",
+      "sort_order": 4,
+      "color": "#2FA096",
+      "description": "Demand sensing, S&OP / IBP, multi-echelon inventory optimization (MEIO), supplier management & network logistics.",
+      "scope": "End-to-end supply chain synchronization: consensus baseline & promo forecasting, S&OP / rough-cut capacity planning (RCCP), multi-echelon inventory positioning, supplier procurement & PPV tracking, multi-tier logistics network and order fulfillment (OTIF).",
+      "knowledge": {
+        "Concepts & processes": [
+          {
+            "heading": "04 Supply Chain & Procurement Core Entities & Mechanics",
+            "items": [
+              {
+                "title": "DemandForecast",
+                "text": "The demand signal: FCSTRPT schema (demand unit/group/location, base vs non-base history & forecast), decomposition into base + influenced demand, driver models (WAS × seasonality × elasticity × calendar), 27-method library + ML, abnormal-demand log. (Attributes: demandUnit (SKU), demandGroup, location, baseHist/nonBaseHist, baseFcst/nonBaseFcst, fcstDate... Evidence: HPC major FCSTRPT export · tobacco major Demand Forecast Workshop (driver-management model) · Anaplan connected planning)"
+              },
+              {
+                "title": "S&OP Plan",
+                "text": "The 18-month rolling integrated plan run as a monthly 5-meeting cycle with named owners: Product Review → Demand Review → Supply & Material Review → Pre-S&OP → Executive S&OP; extends financially to gross profit and EBITDA with scenarios. (Attributes: cycleMonth, meetings[] (owner, participants), gapClosingActions[], unconstrainedDemand, constrainedDemand, scenarioSet... Evidence: bakery group S&OP IT Roadmap (5 meetings, owners, weekly calendar) · consultancy/Anaplan variant)"
+              },
+              {
+                "title": "SupplyPlan / RCCP",
+                "text": "Production & material response: requirement analyses, make-vs-subcontract, allocation & sourcing plans, constrained flags; RCCP maps SKU families to factory lines with speeds and scenario levers (speed/OEE, shift pattern, add line). (Attributes: productionRequirement, rmRequirement, makeVsSubcontract, allocationPlan, sourcingPlan, constrainedFlag... Evidence: Anaplan SC planning deck · bakery group planning org)"
+              },
+              {
+                "title": "InventoryPosition / Policy",
+                "text": "Position per SKU × location (net stock, open orders, inbound STOs, days of supply) and MEIO-optimized policy: segmentation → service targets → optimization minimizing carrying + lost-sales + replenishment cost; slow-moving (>18d) and remnant (>90d) flags. (Attributes: totalStock, netStockAvailable, openSalesOrders, pendingInboundStos, businessDaysOfSupply, segmentation... Evidence: MEIO framework (Anaplan deck) · HPC major SMR reports & stock classes)"
+              },
+              {
+                "title": "NetworkNode / Lane",
+                "text": "Physical network: supplier → factory → hub → RDC/DC/wholesale point → customer; nodes carry capacity, costs and days-of-supply norms; lanes carry mode, freight cost, lead time, FTL constraints. Redesign is a regular exercise. (Attributes: nodeType, capacity, fixedOpeningClosingCost, handlingCost, dosNorm, lane: mode... Evidence: Network Design & Optimization RACI (Llamasoft/JDA) · industry benchmark (2016/18) benchmark)"
+              },
+              {
+                "title": "SupplyOrders (SO/STO/PO/Shipment)",
+                "text": "The transactional movement objects: sales orders, stock transfer orders, purchase orders (PO vs non-PO), shipments with carriers and late-reason categories, trailer loads, pallets, invoices (3-way match). (Attributes: salesOrder, stockTransferOrder, transferOrder, purchaseOrder, shipment (carrier, lateReason), trailerLoad... Evidence: HPC major SC metric model & information model)"
+              },
+              {
+                "title": "Supplier / ProcurementCategory",
+                "text": "Vendor master with OTIF, lead time, reject/waiver rates and scorecards; category taxonomy direct (raw materials, packaging, logistics) vs indirect & traded; savings initiatives with the pipeline identified → approved → budgeted → booked and the finance-to-procurement bridge. (Attributes: vendorId, categoryAssignment, otif, leadTime, rejectRate, waiverRate... Evidence: bakery group procurement org + dashboard vision · strategy consultancy digital-procurement booklet (12 use cases))"
+              }
+            ],
+            "tables": [],
+            "notes": [
+              "Governed scope: End-to-end supply chain synchronization: consensus baseline & promo forecasting, S&OP / rough-cut capacity planning (RCCP), multi-echelon inventory positioning, supplier procurement & PPV tracking, multi-tier logistics network and order fulfillment (OTIF)."
+            ]
+          }
+        ]
+      },
+      "knowledge_evidence": "Derived from global brewer IBP implementations, food major supply network designs, and multi-echelon inventory models."
+    },
+    {
+      "code": "MFG",
+      "key": "mfg",
+      "slug": "manufacturing-quality",
+      "name": "05 Manufacturing & Quality",
+      "sort_order": 5,
+      "color": "#A0784A",
+      "description": "Production scheduling, plant operations, shop-floor quality standards, maintenance & overall equipment effectiveness (OEE).",
+      "scope": "Factory execution and operational excellence: master production orders, plant line capacity & changeovers, shop-floor quality inspections (PPM, RFT, DART), loss analysis, and bill of materials (BOM) consumption.",
+      "knowledge": {
+        "Concepts & processes": [
+          {
+            "heading": "05 Manufacturing & Quality Core Entities & Mechanics",
+            "items": [
+              {
+                "title": "Plant / Line / Machine",
+                "text": "Region → site → production line → machine → shift → operator; carries line speeds, changeover matrices, raw OEE (observed ~40–50% on real lines) and capacity utilization. (Attributes: lineSpeed, plannedRunTime, changeoverMatrix, rawOee, capacityUtilization, shift... Evidence: HPC major plant financial report + manufacturing metric model · tobacco major global MES program)"
+              },
+              {
+                "title": "ProductionOrder / BOM",
+                "text": "The make event: planned vs actual quantity, TECO timestamp (→ production lead time), yield, verbatim variance formulas (labour efficiency, material usage/price); BOM with costing and the 42-day on-time release rule. (Attributes: orderId, plannedQty/actualQty, tecoTimestamp, productionLeadTime, yield, varianceSet... Evidence: HPC major manufacturing metric model · quality scorecard)"
+              },
+              {
+                "title": "Maintenance / Quality / LossEvent",
+                "text": "Maintenance (notification→order, MTTR/MTBF, preventive vs breakdown), quality records (NCR, complaints PPM, RFT, rework/recall, vendor rejects) and the OEE loss tree (availability / performance / quality losses) with waste causality. (Attributes: mttr, mtbf, pmCompletionPct, preventiveVsBreakdownRatio, ncr, complaintsPpm... Evidence: HPC major metric model — manufacturing (verbatim formulas) · tobacco major digital-manufacturing booklet)"
+              }
+            ],
+            "tables": [],
+            "notes": [
+              "Governed scope: Factory execution and operational excellence: master production orders, plant line capacity & changeovers, shop-floor quality inspections (PPM, RFT, DART), loss analysis, and bill of materials (BOM) consumption."
+            ]
+          }
+        ]
+      },
+      "knowledge_evidence": "Based on manufacturing execution systems (MES), plant quality compliance frameworks, and line efficiency standards."
+    },
+    {
+      "code": "NPD",
+      "key": "npd",
+      "slug": "innovation-npd",
+      "name": "06 Innovation & NPD",
+      "sort_order": 6,
+      "color": "#4EA36A",
+      "description": "New product development, stage-gate governance, product launch tracking & new SKU commercialization.",
+      "scope": "End-to-end innovation pipeline: white-space consumer opportunity identification, cross-functional stage-gate reviews synchronized with S&OP cycles, retail launch records, missile distribution builds, and new SKU commercialization.",
+      "knowledge": {
+        "Concepts & processes": [
+          {
+            "heading": "06 Innovation & NPD Core Entities & Mechanics",
+            "items": [
+              {
+                "title": "NPDProject",
+                "text": "The innovation pipeline object: gate status, project class, launch window × country, pipeline value (k€) with deltas vs prior snapshot, FY1/Y2 sales & GP%, health RAGs, private-label and on-hold flags. (Attributes: projectId, market(s), brand, skuCount, gateStatus, projectClass... Evidence: bakery group NPD pipeline + 1-pager · HPC major NPI review)"
+              },
+              {
+                "title": "Gate",
+                "text": "Stage-gate governance: Discovery → Charter → Feasibility → Development → Qualification → SKU/Launch approval → Implementation (or G1/G2 embedded in the S&OP cycle); investment decisions precede approval. (Attributes: gateMeetingDate, approvalType, sandOPCycleLink, ragStatuses... Evidence: HPC major NPD Apr-16 NPI review · bakery group gate labels)"
+              },
+              {
+                "title": "LaunchRecord",
+                "text": "Per SKU × retailer: presentation date, listing decision, in-store date target vs actual, marketing & production dates, distribution build (store counts, WTD%), price point, exclusivity — reviewed post-launch vs the launchgate case. (Attributes: presentationDate, listingDecision, inStoreDateTargetActual, distributionBuild (stores, wtdPct), pricePoint, exclusivityFlag... Evidence: HPC major NPD Tracker 2016 · UK NPD 2015 summary)"
+              }
+            ],
+            "tables": [],
+            "notes": [
+              "Governed scope: End-to-end innovation pipeline: white-space consumer opportunity identification, cross-functional stage-gate reviews synchronized with S&OP cycles, retail launch records, missile distribution builds, and new SKU commercialization."
+            ]
+          }
+        ]
+      },
+      "knowledge_evidence": "Validated by HPC NPD trackers, stage-gate innovation review templates, and launch commercialization playbooks."
+    },
+    {
+      "code": "FIN",
+      "key": "finance",
+      "slug": "finance-epm",
+      "name": "07 Finance & EPM",
+      "sort_order": 7,
+      "color": "#6E7FBF",
+      "description": "Gross-to-net waterfall, customer × SKU profitability, planning versions, standard costing, working capital & GRC.",
+      "scope": "Enterprise performance management & finance hub: gross-to-net (G2N) revenue waterfall, P&L reporting line item (RLI) hierarchies, planning versions & latest estimates, customer×SKU profitability ladders (whale curves), standard costing & variance taxonomy, working capital management (cash-to-close / CCC), risk & control frameworks, and valuation.",
+      "knowledge": {
+        "Concepts & processes": [
+          {
+            "heading": "07 Finance & EPM Core Entities & Mechanics",
+            "items": [
+              {
+                "title": "PnL ReportingLineItem",
+                "text": "The account roll-up (BPC RLI pattern) instantiating a gross-to-net waterfall down to net income; fourth instance: global brewer IBP with MACO (= gross turnover − variable industrial − variable logistics cost) → ZBB → EBITDA → operational free cash flow. (Attributes: rliCode, parent, sign, formulaRefs (ISP%, retention, MPC/statCase), granularityMatrix (SKU vs brand vs company), maco... Evidence: PNL Report by RU and PC1 (beverage major BPC) · HPC major consolidated P&L · Anaplan COE overview)"
+              },
+              {
+                "title": "PlanningVersion / Scenario",
+                "text": "Version set: actual · plan/budget (annual plan, 1YP) · reforecasts (PPR-n = n months actual + remainder forecast) · latest estimate · prior year · constant-FX variants · scenarios; performance vs posting period; organic flags; ZBB workflow. (Attributes: versionType, pprN, latestEstimate, constantFxVariants, organicFlag, driverBasedInputs... Evidence: HPC major BPC dimension set + Finance MoM (PPR cycle) · beverage group FP&A proposal · global-brewer ZBB)"
+              },
+              {
+                "title": "ProfitabilityRecord",
+                "text": "Performance-date-based customer × SKU P&L, COPA-extended: full G2N to marketing profit with allocation logic, TPM-liability reconciliation, cost-to-serve extension and the CPP margin ladder (material → contribution → plant margin); whale-curve analysis. (Attributes: grain (customer × brand/MPG × size × month), allocationLogic, tpmLiabilityReconciliation, costToServe, marginLadder (MM→CM→PM), whaleCurve... Evidence: HPC major Customer Profitability reference + solution options · nutrition group CPP · dairy cooperative EPM)"
+              },
+              {
+                "title": "DebtorPosition / CreditPolicy",
+                "text": "Receivables analytics: ARDSO, ageing buckets with migration % (leading bad-debt indicator), follow-up efficiency, dispute taxonomy, Altman Z-score banding, payer-behaviour segments, insured exposure, provisioning models. (Attributes: arDso, ageingBuckets[], bucketMigrationPct, overduePct, doubtfulRule (>120d), followUpEfficiency... Evidence: nutrition group metric lists + debtor dashboards (verbatim formulas) · HPC major working-capital report)"
+              },
+              {
+                "title": "PlanningCoE / EPM Model",
+                "text": "The governance object: 4 operating-model structure options, hub-spoke-crew roles, 90-day scorecards and SLA tiers; v1.1 adds the CFO-agenda pillars, the 4-phase finance-transformation lifecycle, the Lagging→Pioneering maturity model, shared-services scope and finance-cost benchmarks (median 1.24% of sales, best-in-class 0.61%; world-class close ≈2 days). (Attributes: structureOptions[], hubSpokeCrewRoles, ninetyDayScorecard, slaTiers, epmMaturity, cfoAgendaPillars[]... Evidence: global-brewer planning-CoE decks · tobacco major Approach for Planning COE · consultancy CFO-agenda deck · FPM practice decks · benchmark studies)"
+              },
+              {
+                "title": "CostingAllocationModel",
+                "text": "The formal costing machinery: standard costing (4-element system, management by exception) with the full variance taxonomy (material price/usage incl. mix & yield, labour, overhead expenditure/efficiency/volume, planning vs operational), marginal vs absorption reconciliation, two-stage ABC and time-driven ABC, the cost build-up ladder and shared-services chargeback (actual-cost vs standard-price; waterfall/recursive/reciprocal). (Attributes: costingTechnique, standardCostingSystem, varianceTaxonomy, costBuildUpLadder (Prime→Works→COGM→COGS→COS), abcCalculationPath, tdAbcTimeEquations... Evidence: professional-accounting-body costing guides (verbatim) · FPM costing framework & battle cards · worked ABC examples · shared-services costing white papers)"
+              },
+              {
+                "title": "TreasuryFunction / WC Program",
+                "text": "The instrument-and-program layer above DebtorPosition: treasury lead roles (survey-evidenced), the CCC managed through the P2P / Forecast-to-Fulfill / O2C process triad, working-capital governance splits, financing instruments (reverse factoring, factoring, forfaiting, cash pooling), bad-debt value management, and sector WCR/CCC benchmarks. (Attributes: treasuryLeadRoles[], strategicShift, cccProcessTriad (P2P/F2F/O2C), wcGovernance, instruments[], badDebtValueMgmt... Evidence: treasury-association & pan-European treasurer surveys · Big-4/strategy-consultancy WC papers · FPM working-capital offering · treasury case studies)"
+              },
+              {
+                "title": "RiskControlFramework",
+                "text": "Governance, risk & internal control: control components (environment → risk assessment → response → control activities → monitoring), risk/control universes with fraud flags, DOA & SOD matrices, KRIs, 100%-population risk analytics, the full P2P policy anatomy (verbatim thresholds, 3-way match, 11 KPIs), and accounting-standard events (IAS 36 impairment, dual-GST mechanics). (Attributes: controlComponents[], riskUniverse/controlUniverse, doaMatrix, sodMatrix, kriRepository, riskAnalyticsMode (100% population)... Evidence: FPM GRC capability decks · risk-analytics offering · GCC services company P2P policy (worked artifact) · Big-4 IAS 36 guide · GST readiness decks)"
+              },
+              {
+                "title": "ValuationModel / StatementAnalysis",
+                "text": "Financial statement analysis and enterprise valuation: the four-category ratio taxonomy (verbatim formulas incl. DuPont), analytical-restatement plays (LIFO↔FIFO, OBS add-backs, consolidation recasts), enterprise DCF ↔ economic-profit equivalence (EVA/CFROI/MVA), residual-income models, target-multiple formulas from ROIC/WACC/g, and M&A synergy-premium logic. (Attributes: ratioTaxonomy (activity/liquidity/solvency/profitability), analyticalRestatements[], dcfModel (NOPLAT, FCF, continuing value), economicProfitEquivalence, residualIncomeModel, targetMultiples (EV/EBITDA, P/E, PEG…)... Evidence: statement-analysis courseware (incl. a beverage major's bottler-consolidation recast) · strategy-consultancy valuation handbook & model · investment-bank multiples primer · academic EVA/CFROI references)"
+              },
+              {
+                "title": "EPMPlatformModel",
+                "text": "The technology object finance runs on: the canonical five-component CPM suite (BP&F, profitability modeling, strategy management, consolidation & close, reporting & disclosure), a 17-dimension reference planning model, the ABC allocation engine's calculation path, implementation methodology (phased releases, parallel run, hypercare; failure statistics), and the platform landscape with cloud-vs-on-premise economics. (Attributes: cpmSuiteComponents[] (5), referenceDimensionModel (17 dims), allocationEngine (LineItem→Driver→Activity→CostObject), implementationMethodology, platformLandscape, integrationPatterns (drill-back, audit trail)... Evidence: analyst-research suite definitions (verbatim) · wind-turbine manufacturer 17-dimension blueprint · bank shared-services costing re-engineering · glass-manufacturer phased implementation · platform white papers)"
+              }
+            ],
+            "tables": [],
+            "notes": [
+              "Governed scope: Enterprise performance management & finance hub: gross-to-net (G2N) revenue waterfall, P&L reporting line item (RLI) hierarchies, planning versions & latest estimates, customer×SKU profitability ladders (whale curves), standard costing & variance taxonomy, working capital management (cash-to-close / CCC), risk & control frameworks, and valuation."
+            ]
+          }
+        ]
+      },
+      "knowledge_evidence": "Anchored in corporate BPC reporting waterfalls, customer profitability blueprints, and treasury working-capital benchmark studies."
+    },
+    {
+      "code": "ECOM",
+      "key": "ecom",
+      "slug": "ecommerce-d2c-strategy",
+      "name": "08 E-commerce, D2C & Strategy",
+      "sort_order": 8,
+      "color": "#D08A3E",
+      "description": "Digital shelf optimization, eB2B platforms, direct-to-consumer (D2C) channels & omnichannel strategy.",
+      "scope": "Digital commerce transformation: web & eB2B platform ordering twins, digital shelf analytics & availability, D2C brand stores and subscriber conversion, and strategic channel mix optimization.",
+      "knowledge": {
+        "Concepts & processes": [
+          {
+            "heading": "08 E-commerce, D2C & Strategy Core Entities & Mechanics",
+            "items": [
+              {
+                "title": "WebSession / eB2BOrder",
+                "text": "Digital ordering & behaviour: web sessions with UTM/funnel attributes; eB2B orders with order-method (platform vs call centre — the adoption metric), deal incrementality, cart abandonment. Adoption datum: B2B ~40% of sales → 70% ambition. (Attributes: utmParams, funnelSteps, device/geo, orderMethod (platform vs callCentre), customerTier, dealIncrementality... Evidence: global brewer B2B Overall Brief · B2B Engagement Platform requirements)"
+              },
+              {
+                "title": "D2CLead / FunnelStage",
+                "text": "Direct-to-consumer funnel: leads by source (popup, email capture, referral, SEO), stages acquire → convert → retain → advocacy, HyperCare trial check-ins, party-of-sale (1st/2nd/3rd); common consumer key as the data-maturity gate. (Attributes: lead (email, sourceChannel), funnelStage (ACR), hyperCareCheckIns, partyOfSale, commonConsumerKey... Evidence: tobacco major D2C Activation framework · next-gen products ACR journey · vaping-brand e-commerce performance)"
+              },
+              {
+                "title": "BenchmarkPeerSet / CategorySegment",
+                "text": "Strategy objects: peer benchmarking (financial levers, operations KPIs, project-level process benchmarking) and category segmentation with per-segment CAGR, share and decline drivers. (Attributes: peerSet, financialLevers[], method (financial/operations/process), market→category→segment, segmentCagr, volumeShare... Evidence: global brewer Benchmarking 2013 + workbook · Market Overview for GAC)"
+              }
+            ],
+            "tables": [],
+            "notes": [
+              "Governed scope: Digital commerce transformation: web & eB2B platform ordering twins, digital shelf analytics & availability, D2C brand stores and subscriber conversion, and strategic channel mix optimization."
+            ]
+          }
+        ]
+      },
+      "knowledge_evidence": "Minced from leading CPG eCommerce platforms, digital shelf monitoring tools, and omnichannel revenue growth initiatives."
+    },
+    {
+      "code": "DATA",
+      "key": "data",
+      "slug": "data-analytics-foundation",
+      "name": "09 Data & Analytics Foundation",
+      "sort_order": 9,
+      "color": "#64748B",
+      "description": "Master data management (MDM), enterprise data quality, hierarchy governance & AI/ML analytics use-case portfolio.",
+      "scope": "Enterprise data & intelligence backbone: source system integration, conformed fact subject definitions, governed metric dictionaries with role-level line of sight, hierarchy roll-up governance, master data quality defect profiling, and AI/ML advanced analytics use-case deployment.",
+      "knowledge": {
+        "Concepts & processes": [
+          {
+            "heading": "09 Data & Analytics Foundation Core Entities & Mechanics",
+            "items": [
+              {
+                "title": "MetricDefinition",
+                "text": "The atom of the measurement system — the metric-model row: name, base data, source system, verbatim formula, UOM, time grains, dimension flags, priority, complexity, owning role, RAG thresholds, non-aggregation rules. 600+ catalogued; the join between business ontology and BI. (Attributes: area/function, metricName, baseData, dataSource (t-codes), formula, uom... Evidence: Metric List Appendix A · HPC major metric models · tobacco major PI Metrics · MT Insights · nutrition group metric lists)"
+              },
+              {
+                "title": "FactSubject",
+                "text": "The transactional grains a CPG warehouse conforms (13-fact star pattern): sell-in · sell-out · syndicated sell-out · category sell-out · sales plan · estimates · fill rate (8 drop reasons) · OOS audit · SOS audit · asset visibility · promo implementation · competitor promo · P&L actuals. (Attributes: factName, grain (dims subset), dropReasonDecomposition, etlAuditColumns, syndicatedTwin (Nielsen/IRI)... Evidence: tobacco major MT Sales Data Mart dictionary (27 dims / 13 facts))"
+              },
+              {
+                "title": "HierarchyNode (governance)",
+                "text": "Three governed classes: source hierarchies (maintained in ERP, replicated), attribute fields (governed master-data groupings) and attribute hierarchies (hierarchy-like reporting from governed attributes); MDM obligations to keep mapping/text tables in sync. (Attributes: hierClass (source/attributeField/attributeHierarchy), maintainedIn, mappingTables, textTables, syncObligations... Evidence: HPC major Business Hierarchies position paper · BW InfoObject design)"
+              },
+              {
+                "title": "SourceSystem",
+                "text": "The canonical CPG landscape (pattern): SAP ECC/BW/APO/DSD/BPC · CRM/SFA · planning engines · TPM · EPOS/retailer POS · EDI · distributor feeds · syndicated data · loyalty/web/social · MES/SCADA/LIMS · 3rd-party feeds; with MDM ownership per object and the lakehouse principle 'no tool connects directly to sources'. (Attributes: systemId, dataDomains[], extractMechanism, latency, mdmOwnership, lakehouseLayer (raw→enrich→serve→consume)... Evidence: Data Assessment Report · tobacco major Data Platform Architecture v18 · HPC major & beverage group architectures)"
+              },
+              {
+                "title": "DataQualityDefect / MDM",
+                "text": "Logged defect classes (negative sell-in, share >100%, achievement >500%, plan = 0, drifting branch counts, missing history) and the MDM process: maturity ladder, six solution components, field-level CRUD ownership. (Attributes: defectClass, affectedSource, mdmMaturityLevel, sixComponents, fieldOwnership (CRUD per SAP field), numberingStandards (GDS/GDSN/RFID)... Evidence: MT Insights DQ log · HPC major MDM discussion · group data warehouse master-data lists)"
+              },
+              {
+                "title": "AnalyticsUseCase",
+                "text": "The AI/ML portfolio object: algorithm class, maturity stage (descriptive→optimization), success probability, change-management risk ('planners might think their decision rights are taken away'), measured outcomes (TPO ROI 8→20; suggested order +3.2% revenue; MAPE 9–11%). (Attributes: useCase, domain, algorithmClass, maturityStage, successProbability, changeManagementRisk... Evidence: CPG Advanced Analytics decks · tobacco major planning use-case matrix · HPC major Enterprise Analytics Roadmap)"
+              }
+            ],
+            "tables": [],
+            "notes": [
+              "Governed scope: Enterprise data & intelligence backbone: source system integration, conformed fact subject definitions, governed metric dictionaries with role-level line of sight, hierarchy roll-up governance, master data quality defect profiling, and AI/ML advanced analytics use-case deployment."
+            ]
+          }
+        ]
+      },
+      "knowledge_evidence": "Synthesized from enterprise data lake blueprints, CPG advanced analytics portfolios, and MDM governance charters."
+    }
+  ],
+  "nodes": [
+    {
+      "key": "product",
+      "name": "Product / SKU",
+      "group": "spine",
+      "group_name": "Master-data spine",
+      "color": "#5A8AC3",
+      "kind": "spine",
+      "definition": "The sellable item and its roll-ups. Two evidenced hierarchy patterns: tobacco (Category→Brand Family→Variant→Product→Trade SKU→Factory SKU) and household (Brand→Price Band→Sub-brand→Form→Size→Flavor; TPM roll-up Division→Category→Brand→MPG→GTIN/UPC).",
+      "attributes": [
+        "skuId",
+        "ean/upc/gtin",
+        "packType",
+        "packSize",
+        "uomConversions",
+        "priceSegment",
+        "isVolumeDriveProduct",
+        "isSellable/isReturnable",
+        "skuStatus",
+        "newProductFlag",
+        "statCaseFactor",
+        "abcCode",
+        "materialClass (ZFIN/ZSEM/ZRAW/ZPAC)",
+        "bomId",
+        "mpg",
+        "brandFamily/brandVariant"
+      ],
+      "formulas": [],
+      "evidence": "tobacco major Data Dictionary V4.0 · trade-transformation master-data spec v1.0 · HPC major group data warehouse Master Data List · TPM-program requirements",
+      "canon_attributes": [
+        "skuId",
+        "ean/upc/gtin",
+        "packType",
+        "packSize",
+        "uomConversions",
+        "priceSegment",
+        "isVolumeDriveProduct",
+        "isSellable/isReturnable",
+        "skuStatus",
+        "newProductFlag",
+        "statCaseFactor",
+        "abcCode",
+        "materialClass (ZFIN/ZSEM/ZRAW/ZPAC)",
+        "bomId",
+        "mpg",
+        "brandFamily/brandVariant"
+      ],
+      "canon_ref": "§1",
+      "canon_title": "Product / SKU",
+      "canon_joins": "",
+      "canon_evidence": "tobacco major Data Dictionary V4.0 · trade-transformation master-data spec v1.0 · HPC major group data warehouse Master Data List · TPM-program requirements"
+    },
+    {
+      "key": "outlet",
+      "name": "CustomerOutlet",
+      "group": "spine",
+      "group_name": "Master-data spine",
+      "color": "#5A8AC3",
+      "kind": "spine",
+      "definition": "The demand-side counterparty at every level. Layer model: Outlet → Delivery Point → Legal Customer → Retail Account → Supplier (multi-layer). Finance ladder: Class of Trade → Parent → Planning Account → Sold-to → Ship-to.",
+      "attributes": [
+        "customerCode",
+        "tradeChannelCode (~40 codes)",
+        "outletType/subType",
+        "ownershipType (COCO/DODO/INDEP)",
+        "volumeClass (1–9)",
+        "shopperChannel",
+        "creditPeriod/creditLimit",
+        "geoCoordinates",
+        "weightOfOutlet",
+        "oosRate",
+        "facingShare",
+        "suggestedAssortment",
+        "creditScore",
+        "churnPropensity",
+        "footfall",
+        "planningAccount",
+        "soldTo/shipTo"
+      ],
+      "formulas": [],
+      "evidence": "beverage bottler Outlet Data Solution · tobacco major Data Dictionary · HPC major Customer Profitability reference · the TPM program account model",
+      "canon_attributes": [
+        "customerCode",
+        "tradeChannelCode (~40 codes)",
+        "outletType/subType",
+        "ownershipType (COCO/DODO/INDEP)",
+        "volumeClass (1–9)",
+        "shopperChannel",
+        "creditPeriod/creditLimit",
+        "geoCoordinates",
+        "weightOfOutlet",
+        "oosRate",
+        "facingShare",
+        "suggestedAssortment",
+        "creditScore",
+        "churnPropensity",
+        "footfall",
+        "planningAccount",
+        "soldTo/shipTo"
+      ],
+      "canon_ref": "§2",
+      "canon_title": "CustomerOutlet",
+      "canon_joins": "",
+      "canon_evidence": "beverage bottler Outlet Data Solution · tobacco major Data Dictionary · HPC major Customer Profitability reference · the TPM program account model"
+    },
+    {
+      "key": "geo",
+      "name": "GeographyNode / Territory",
+      "group": "spine",
+      "group_name": "Master-data spine",
+      "color": "#5A8AC3",
+      "kind": "spine",
+      "definition": "Commercial geography — each field-force type may carry its own territory hierarchy over the same outlets. Chain: Outlet → Route/Beat → Territory → Area → Region → End Market → Cluster → Global Region; supply variant Sales Area ↔ Depot with lead-time maps.",
+      "attributes": [
+        "nodeId",
+        "level",
+        "parentId",
+        "ffType",
+        "urbanRuralFlag",
+        "salesArea",
+        "depot",
+        "leadTimeMap"
+      ],
+      "formulas": [],
+      "evidence": "TMD KPIs dimension sheets · trade-transformation master-data spec · tobacco major's driver-management forecasting model workshop",
+      "canon_attributes": [
+        "nodeId",
+        "level",
+        "parentId",
+        "ffType",
+        "urbanRuralFlag",
+        "salesArea",
+        "depot",
+        "leadTimeMap"
+      ],
+      "canon_ref": "§3",
+      "canon_title": "GeographyNode / Territory",
+      "canon_joins": "",
+      "canon_evidence": "TMD KPIs dimension sheets · trade-transformation master-data spec · tobacco major's driver-management forecasting model workshop"
+    },
+    {
+      "key": "time",
+      "name": "TimePeriod",
+      "group": "spine",
+      "group_name": "Master-data spine",
+      "color": "#5A8AC3",
+      "kind": "spine",
+      "definition": "Dual calendar/fiscal date spine plus the FMCG-specific cycle/campaign grain. Conventions: MTD/QTD/YTD/CTD + prior-period comparatives; performance period vs posting period; as-is vs as-was reporting.",
+      "attributes": [
+        "calendarDate",
+        "fiscalPeriod",
+        "adjustmentPeriod (P13)",
+        "cycle/campaign",
+        "performancePeriod",
+        "postingPeriod",
+        "asWasFlag"
+      ],
+      "formulas": [],
+      "evidence": "Indian FMCG major MT date dimension · tobacco major CC DATE_DIM · HPC major customer-profitability reference · CPG Template principles",
+      "canon_attributes": [
+        "calendarDate",
+        "fiscalPeriod",
+        "adjustmentPeriod (P13)",
+        "cycle/campaign",
+        "performancePeriod",
+        "postingPeriod",
+        "asWasFlag"
+      ],
+      "canon_ref": "§4",
+      "canon_title": "TimePeriod",
+      "canon_joins": "",
+      "canon_evidence": "Indian FMCG major MT date dimension · tobacco major CC DATE_DIM · HPC major customer-profitability reference · CPG Template principles"
+    },
+    {
+      "key": "org",
+      "name": "OrganizationNode",
+      "group": "spine",
+      "group_name": "Master-data spine",
+      "color": "#5A8AC3",
+      "kind": "spine",
+      "definition": "Company → division/BU → function → cost/profit center → role → employee. Roles are first-class: KPI dictionaries assign each metric an owning role dashboard with RAG thresholds (line of sight).",
+      "attributes": [
+        "nodeId",
+        "nodeType",
+        "parentId",
+        "roleName",
+        "kpiOwnership[]",
+        "ragThresholds",
+        "costCenter",
+        "profitCenter"
+      ],
+      "formulas": [],
+      "evidence": "tobacco major Outlet Dashboard specs · HPC major dashboard landscapes · bakery group SCM org charts",
+      "canon_attributes": [
+        "nodeId",
+        "nodeType",
+        "parentId",
+        "roleName",
+        "kpiOwnership[]",
+        "ragThresholds",
+        "costCenter",
+        "profitCenter"
+      ],
+      "canon_ref": "§5",
+      "canon_title": "OrganizationNode",
+      "canon_joins": "",
+      "canon_evidence": "tobacco major Outlet Dashboard specs · HPC major dashboard landscapes · bakery group SCM org charts"
+    },
+    {
+      "key": "distributor",
+      "name": "Distributor / Wholesaler",
+      "group": "rtm",
+      "group_name": "01 Sales & Distribution (RtM)",
+      "color": "#2E6FCA",
+      "kind": "domain",
+      "definition": "The indirect-RtM intermediary carrying the three sales flows: primary (manufacturer→distributor, sell-in), secondary (distributor→outlet, sell-out), tertiary (outlet→consumer).",
+      "attributes": [
+        "distributorId",
+        "type (WS/distributor, multi-layer)",
+        "marginStructure",
+        "warehouses[]",
+        "servedOutlets[]",
+        "dcRdcPlantMapping",
+        "creditLimit",
+        "receivables",
+        "pipelineStock",
+        "sellOutFeedStatus"
+      ],
+      "formulas": [],
+      "evidence": "food major TM&D analytics + a distributor-reporting platform RFP · bakery group / diversified manufacturer secondary-sales model · tobacco major DSS workstream",
+      "canon_attributes": [
+        "distributorId",
+        "type (WS/distributor, multi-layer)",
+        "marginStructure",
+        "warehouses[]",
+        "servedOutlets[]",
+        "dcRdcPlantMapping",
+        "creditLimit",
+        "receivables",
+        "pipelineStock",
+        "sellOutFeedStatus"
+      ],
+      "canon_ref": "§6",
+      "canon_title": "Distributor / Wholesaler",
+      "canon_joins": "",
+      "canon_evidence": "food major TM&D analytics + a distributor-reporting platform RFP · bakery group / diversified manufacturer secondary-sales model · tobacco major DSS workstream"
+    },
+    {
+      "key": "rep",
+      "name": "FieldForceRep",
+      "group": "rtm",
+      "group_name": "01 Sales & Distribution (RtM)",
+      "color": "#2E6FCA",
+      "kind": "domain",
+      "definition": "The field seller/merchandiser. Call economics derived per rep: productive-call %, average vs break-even drop size, plan/route/time-standard adherence.",
+      "attributes": [
+        "repId",
+        "ffType (promptSales/preSales/TMR/merchandiser/telesales)",
+        "supervisor",
+        "depot",
+        "skillGrade",
+        "handheldId",
+        "incentivePlanId",
+        "callRate",
+        "costPerCall",
+        "avgDropSize",
+        "breakEvenDropSize"
+      ],
+      "formulas": [],
+      "evidence": "field performance-management model · TMD KPIs · salesforce-incentive deck",
+      "canon_attributes": [
+        "repId",
+        "ffType (promptSales/preSales/TMR/merchandiser/telesales)",
+        "supervisor",
+        "depot",
+        "skillGrade",
+        "handheldId",
+        "incentivePlanId",
+        "callRate",
+        "costPerCall",
+        "avgDropSize",
+        "breakEvenDropSize"
+      ],
+      "canon_ref": "§7",
+      "canon_title": "FieldForceRep",
+      "canon_joins": "",
+      "canon_evidence": "field performance-management model · TMD KPIs · salesforce-incentive deck"
+    },
+    {
+      "key": "coverage",
+      "name": "CoveragePlan (TCP / TCR)",
+      "group": "rtm",
+      "group_name": "01 Sales & Distribution (RtM)",
+      "color": "#2E6FCA",
+      "kind": "domain",
+      "definition": "Decides who visits which outlet how often. TCP sets universe/FF-type/frequency; TCR is the periodic capacity-vs-demand review consolidating workload from coverage, assortment, media and incentive plans with scenario levers.",
+      "attributes": [
+        "outletUniverse",
+        "coveredFlag",
+        "ffTypeAssignment",
+        "callFrequency",
+        "callType",
+        "workloadMinutes",
+        "capacityMinutes",
+        "scenarioLevers",
+        "approvalBody"
+      ],
+      "formulas": [],
+      "evidence": "SAO Toolkit · TCR Final process flow · trade-planning analysis deck",
+      "canon_attributes": [
+        "outletUniverse",
+        "coveredFlag",
+        "ffTypeAssignment",
+        "callFrequency",
+        "callType",
+        "workloadMinutes",
+        "capacityMinutes",
+        "scenarioLevers",
+        "approvalBody"
+      ],
+      "canon_ref": "§8",
+      "canon_title": "CoveragePlan (TCP / TCR)",
+      "canon_joins": "",
+      "canon_evidence": "SAO Toolkit · TCR Final process flow · trade-planning analysis deck"
+    },
+    {
+      "key": "assortment",
+      "name": "AssortmentPlan (SAO / SAT)",
+      "group": "rtm",
+      "group_name": "01 Sales & Distribution (RtM)",
+      "color": "#2E6FCA",
+      "kind": "domain",
+      "definition": "Check→Plan→Act assortment object: core range / must-stock lists by outlet cluster, target distribution by SKU, rationalization; SAT is the outlet-level target whose achievement is SAT compliance %.",
+      "attributes": [
+        "outletCluster",
+        "skuCapacityByVolumeClass",
+        "coreRange[]",
+        "mustStockList[]",
+        "targetDistributionBySku",
+        "delistings[]",
+        "cycleInstructionId",
+        "satCompliancePct"
+      ],
+      "formulas": [],
+      "evidence": "SAO Toolkit (+ SKU Distribution Optimiser & Assortment Generator)",
+      "canon_attributes": [
+        "outletCluster",
+        "skuCapacityByVolumeClass",
+        "coreRange[]",
+        "mustStockList[]",
+        "targetDistributionBySku",
+        "delistings[]",
+        "cycleInstructionId",
+        "satCompliancePct"
+      ],
+      "canon_ref": "§9",
+      "canon_title": "AssortmentPlan (SAO / SAT)",
+      "canon_joins": "",
+      "canon_evidence": "SAO Toolkit (+ SKU Distribution Optimiser & Assortment Generator)"
+    },
+    {
+      "key": "call",
+      "name": "CallVisit",
+      "group": "rtm",
+      "group_name": "01 Sales & Distribution (RtM)",
+      "color": "#2E6FCA",
+      "kind": "domain",
+      "definition": "The atomic execution event: activities executing plans, surveys, stock count, audit, order capture — with GPS stamp and productive/partial/unproductive outcome.",
+      "attributes": [
+        "callId",
+        "plannedFlag/adHoc",
+        "callType",
+        "activities[]",
+        "surveysTaken[]",
+        "stockCount[]",
+        "orderCaptured",
+        "callDuration",
+        "gpsStamp",
+        "outcome"
+      ],
+      "formulas": [],
+      "evidence": "trade-execution scope document · Execution@Outlet user journey · tobacco major Data Dictionary (Call, Survey suite)",
+      "canon_attributes": [
+        "callId",
+        "plannedFlag/adHoc",
+        "callType",
+        "activities[]",
+        "surveysTaken[]",
+        "stockCount[]",
+        "orderCaptured",
+        "callDuration",
+        "gpsStamp",
+        "outcome"
+      ],
+      "canon_ref": "§10",
+      "canon_title": "CallVisit",
+      "canon_joins": "",
+      "canon_evidence": "trade-execution scope document · Execution@Outlet user journey · tobacco major Data Dictionary (Call, Survey suite)"
+    },
+    {
+      "key": "audit",
+      "name": "RetailAudit",
+      "group": "rtm",
+      "group_name": "01 Sales & Distribution (RtM)",
+      "color": "#2E6FCA",
+      "kind": "domain",
+      "definition": "Per product × outlet × date: isDistributed, isAvailable (→ OOS derived), facings, POSM inventory, planogram compliance, observed RSP (→ price-compliance index). External twin: Nielsen retail audit.",
+      "attributes": [
+        "isDistributed",
+        "isAvailable",
+        "numFacings",
+        "posmInventory[]",
+        "planogramComplianceFlag",
+        "photoAuditRef",
+        "rspObserved",
+        "auditDate"
+      ],
+      "formulas": [],
+      "evidence": "tobacco major Data Dictionary Retail Audit entity · TMD KPI definitions · Indian FMCG major MT OOS/SOS audit facts",
+      "canon_attributes": [
+        "isDistributed",
+        "isAvailable",
+        "numFacings",
+        "posmInventory[]",
+        "planogramComplianceFlag",
+        "photoAuditRef",
+        "rspObserved",
+        "auditDate"
+      ],
+      "canon_ref": "§11",
+      "canon_title": "RetailAudit",
+      "canon_joins": "",
+      "canon_evidence": "tobacco major Data Dictionary Retail Audit entity · TMD KPI definitions · Indian FMCG major MT OOS/SOS audit facts"
+    },
+    {
+      "key": "soq",
+      "name": "SuggestedOrder (SOQ)",
+      "group": "rtm",
+      "group_name": "01 Sales & Distribution (RtM)",
+      "color": "#2E6FCA",
+      "kind": "domain",
+      "definition": "Recommendation object: baseline forecast + collaborative-filtering order enhancement → suggested quantity; tracked via acceptance, execution rate, serviceability (~85% baseline accuracy reported).",
+      "attributes": [
+        "baselineForecast",
+        "orderEnhancement",
+        "suggestedQty",
+        "acceptanceFlag",
+        "executionRate",
+        "serviceability",
+        "forecastAccuracy"
+      ],
+      "formulas": [],
+      "evidence": "HPC major S&M analytics deck (AOP/ASOP) · field performance-management model",
+      "canon_attributes": [
+        "baselineForecast",
+        "orderEnhancement",
+        "suggestedQty",
+        "acceptanceFlag",
+        "executionRate",
+        "serviceability",
+        "forecastAccuracy"
+      ],
+      "canon_ref": "§12",
+      "canon_title": "SuggestedOrder (SOQ)",
+      "canon_joins": "",
+      "canon_evidence": "HPC major S&M analytics deck (AOP/ASOP) · field performance-management model"
+    },
+    {
+      "key": "tci",
+      "name": "TradeInvestment (TCI) / IncentiveScheme (CIS)",
+      "group": "rtm",
+      "group_name": "01 Sales & Distribution (RtM)",
+      "color": "#2E6FCA",
+      "kind": "domain",
+      "definition": "The customer-facing money: front margin (customer's earn) + back-margin buckets; SONA and CROI derived. CIS: outlet-level incentive schemes with PfP/PfC buckets, enrolment, reward ledger, disputes.",
+      "attributes": [
+        "frontMargin",
+        "backMarginBuckets[]",
+        "perMille",
+        "pctOfCptoNetOfTax",
+        "sona",
+        "croiIndex",
+        "schemeId",
+        "buckets (PfP/PfC-OOS/SAT/RSP)",
+        "enrolledOutlets[]",
+        "rewardLedger",
+        "payoutPct"
+      ],
+      "formulas": [],
+      "evidence": "legacy trade-platform customer scorecard · trade-terms policy manual · CIS PfP/PfC KPI sub-catalog · B2B Engagement Platform requirements",
+      "canon_attributes": [
+        "frontMargin",
+        "backMarginBuckets[]",
+        "perMille",
+        "pctOfCptoNetOfTax",
+        "sona",
+        "croiIndex",
+        "schemeId",
+        "buckets (PfP/PfC-OOS/SAT/RSP)",
+        "enrolledOutlets[]",
+        "rewardLedger",
+        "payoutPct"
+      ],
+      "canon_ref": "§13",
+      "canon_title": "TradeInvestment (TCI) / IncentiveScheme (CIS)",
+      "canon_joins": "",
+      "canon_evidence": "legacy trade-platform customer scorecard · trade-terms policy manual · CIS PfP/PfC KPI sub-catalog · B2B Engagement Platform requirements"
+    },
+    {
+      "key": "accountplan",
+      "name": "AccountPlan",
+      "group": "trade",
+      "group_name": "02 Trade, Promotions & RGM",
+      "color": "#8A4FD0",
+      "kind": "domain",
+      "definition": "Keyed planning account × brand × year; parent of promotions. Carries volume method (demand-planning baseline / % historic shipments / manual), loaded targets, plan rates, shipment-drop profiles and the approval state model.",
+      "attributes": [
+        "volumeMethod (B&I Gold/Silver/TVP)",
+        "tfaTargets (growth%, grossSales$, tradeRate%, slotting$)",
+        "planRates (sraRate, cashDiscountRate)",
+        "shipmentDropProfile",
+        "stateModel"
+      ],
+      "formulas": [],
+      "evidence": "HPC-major TPM program Account Plan/Checkbook/SVP design · consumer-products manufacturer TPM manual",
+      "canon_attributes": [
+        "volumeMethod (B&I Gold/Silver/TVP)",
+        "tfaTargets (growth%, grossSales$, tradeRate%, slotting$)",
+        "planRates (sraRate, cashDiscountRate)",
+        "shipmentDropProfile",
+        "stateModel"
+      ],
+      "canon_ref": "§14",
+      "canon_title": "AccountPlan",
+      "canon_joins": "",
+      "canon_evidence": "HPC-major TPM program Account Plan/Checkbook/SVP design · consumer-products manufacturer TPM manual"
+    },
+    {
+      "key": "promotion",
+      "name": "Promotion",
+      "group": "trade",
+      "group_name": "02 Trade, Promotions & RGM",
+      "color": "#8A4FD0",
+      "kind": "domain",
+      "definition": "The promo event: status lifecycle Draft→Submitted→Planned→Committed→Closed with re-approval on budget breach; tactics; uplift% sourced from lift tables/TPO/manual; grain header→MPG→UPC-week; dead-net-price guardrail.",
+      "attributes": [
+        "promotionId",
+        "status",
+        "performanceDates",
+        "shipmentDates",
+        "promotionType",
+        "tactics[] (TPR/display/feature/slotting/overlay)",
+        "pctAcv",
+        "upliftPct",
+        "scenarioFlag",
+        "grain",
+        "deadNetGuardrail"
+      ],
+      "formulas": [],
+      "evidence": "consumer-products manufacturer + the TPM program promotion-planning requirements · beauty major EMEA RFP",
+      "canon_attributes": [
+        "promotionId",
+        "status",
+        "performanceDates",
+        "shipmentDates",
+        "promotionType",
+        "tactics[] (TPR/display/feature/slotting/overlay)",
+        "pctAcv",
+        "upliftPct",
+        "scenarioFlag",
+        "grain",
+        "deadNetGuardrail"
+      ],
+      "canon_ref": "§15",
+      "canon_title": "Promotion",
+      "canon_joins": "",
+      "canon_evidence": "consumer-products manufacturer + the TPM program promotion-planning requirements · beauty major EMEA RFP"
+    },
+    {
+      "key": "deal",
+      "name": "Deal",
+      "group": "trade",
+      "group_name": "02 Trade, Promotions & RGM",
+      "color": "#8A4FD0",
+      "kind": "domain",
+      "definition": "Settlement-facing child of a promotion: variable (off-invoice, bill-back, scan) or fixed (feature, display, slotting, overlay); cost = volume × rate × redemption% or lump sum; identifies the fund/GL it spends against.",
+      "attributes": [
+        "dealType (variable/fixed)",
+        "subType",
+        "level (header/MPG/SKU)",
+        "estimatedCost",
+        "actualCost",
+        "redemptionPct",
+        "fundId",
+        "glMapping"
+      ],
+      "formulas": [],
+      "evidence": "the TPM program Deals & Settlements design · consumer-products manufacturer deductions requirements",
+      "canon_attributes": [
+        "dealType (variable/fixed)",
+        "subType",
+        "level (header/MPG/SKU)",
+        "estimatedCost",
+        "actualCost",
+        "redemptionPct",
+        "fundId",
+        "glMapping"
+      ],
+      "canon_ref": "§16",
+      "canon_title": "Deal",
+      "canon_joins": "",
+      "canon_evidence": "the TPM program Deals & Settlements design · consumer-products manufacturer deductions requirements"
+    },
+    {
+      "key": "fund",
+      "name": "TradeFund / Checkbook",
+      "group": "trade",
+      "group_name": "02 Trade, Promotions & RGM",
+      "color": "#8A4FD0",
+      "kind": "domain",
+      "definition": "Budget container mapped to GL codes with the lifecycle Budget → Planned → Committed → Expended → Free Balance (= budget − committed − expended); live accruals convert liability to expense on shipment; kept open ~1yr post plan-year.",
+      "attributes": [
+        "fundId",
+        "fundType (fixed/accrual)",
+        "parentChildWithReserve",
+        "spendCategories[]→glAccounts",
+        "freeBalance",
+        "liveAccrualForecast",
+        "closingWindow"
+      ],
+      "formulas": [],
+      "evidence": "consumer-products manufacturer Fund Management requirements · the TPM program checkbook design",
+      "canon_attributes": [
+        "fundId",
+        "fundType (fixed/accrual)",
+        "parentChildWithReserve",
+        "spendCategories[]→glAccounts",
+        "freeBalance",
+        "liveAccrualForecast",
+        "closingWindow"
+      ],
+      "canon_ref": "§17",
+      "canon_title": "TradeFund / Checkbook",
+      "canon_joins": "",
+      "canon_evidence": "consumer-products manufacturer Fund Management requirements · the TPM program checkbook design"
+    },
+    {
+      "key": "deduction",
+      "name": "Deduction",
+      "group": "trade",
+      "group_name": "02 Trade, Promotions & RGM",
+      "color": "#8A4FD0",
+      "kind": "domain",
+      "definition": "AR event — customer short-pays an invoice; matched to deals via resolutions (deal/no-deal), performance date must fall inside the deal window, reason code ties to GL; small deductions auto write-off; repay link for invalid ones.",
+      "attributes": [
+        "deductionCode",
+        "amount",
+        "status",
+        "reasonCode→glAccount",
+        "resolutions[]",
+        "performanceDate",
+        "autoWriteOffThreshold",
+        "repayLink",
+        "erpRoundTrip"
+      ],
+      "formulas": [],
+      "evidence": "consumer-products manufacturer Deductions/Claims/Settlement requirements · TPM-program as-built",
+      "canon_attributes": [
+        "deductionCode",
+        "amount",
+        "status",
+        "reasonCode→glAccount",
+        "resolutions[]",
+        "performanceDate",
+        "autoWriteOffThreshold",
+        "repayLink",
+        "erpRoundTrip"
+      ],
+      "canon_ref": "§18",
+      "canon_title": "Deduction",
+      "canon_joins": "",
+      "canon_evidence": "consumer-products manufacturer Deductions/Claims/Settlement requirements · TPM-program as-built"
+    },
+    {
+      "key": "claim",
+      "name": "Claim / CheckRequest",
+      "group": "trade",
+      "group_name": "02 Trade, Promotions & RGM",
+      "color": "#8A4FD0",
+      "kind": "domain",
+      "definition": "Customer- or broker-submitted settlement with deal and no-deal payments; remaining amount = request − deal − no-deal; SAP check/credit-memo round-trip; post-audit and pre-pay variants.",
+      "attributes": [
+        "claimId",
+        "claimType",
+        "payments[] (deal/noDeal)",
+        "remainingAmount",
+        "sapCheckNo",
+        "creditMemoNo",
+        "postAuditFlag",
+        "prePayFlag"
+      ],
+      "formulas": [],
+      "evidence": "consumer-products manufacturer + the TPM program settlement requirements",
+      "canon_attributes": [
+        "claimId",
+        "claimType",
+        "payments[] (deal/noDeal)",
+        "remainingAmount",
+        "sapCheckNo",
+        "creditMemoNo",
+        "postAuditFlag",
+        "prePayFlag"
+      ],
+      "canon_ref": "§19",
+      "canon_title": "Claim / CheckRequest",
+      "canon_joins": "",
+      "canon_evidence": "consumer-products manufacturer + the TPM program settlement requirements"
+    },
+    {
+      "key": "pricelist",
+      "name": "PriceList / ADL",
+      "group": "trade",
+      "group_name": "02 Trade, Promotions & RGM",
+      "color": "#8A4FD0",
+      "kind": "domain",
+      "definition": "Single list price + COGS + dead-net floors per country/division; ADL = account × product intersection carrying retail price, distribution flags with effective dates and store counts per GTIN (drives %ACV).",
+      "attributes": [
+        "listPrice",
+        "cogs",
+        "deadNetPriceEdla",
+        "deadNetPriceScan",
+        "adl: retailPrice",
+        "inOutDistributionFlags",
+        "storeCountPerGtin",
+        "caseConversionFactors"
+      ],
+      "formulas": [],
+      "evidence": "TPM-program requirements · beauty major price-group spec",
+      "canon_attributes": [
+        "listPrice",
+        "cogs",
+        "deadNetPriceEdla",
+        "deadNetPriceScan",
+        "adl: retailPrice",
+        "inOutDistributionFlags",
+        "storeCountPerGtin",
+        "caseConversionFactors"
+      ],
+      "canon_ref": "§20",
+      "canon_title": "PriceList / ADL",
+      "canon_joins": "",
+      "canon_evidence": "TPM-program requirements · beauty major price-group spec"
+    },
+    {
+      "key": "lift",
+      "name": "LiftModel / TPO",
+      "group": "trade",
+      "group_name": "02 Trade, Promotions & RGM",
+      "color": "#8A4FD0",
+      "kind": "domain",
+      "definition": "The econometric object: log-log mixed-effects demand model decomposing sales into base / trade promo / consumer promo / competition / halo / cannibalization; true lift & true ROI; what-if simulators and scheme recommendation engines.",
+      "attributes": [
+        "modelForm (log-log mixed effects)",
+        "decomposition[]",
+        "trueLift",
+        "trueRoi",
+        "whatIfSimulator",
+        "schemeRecommender (genetic algo, Lagrange slabs)",
+        "dataRequirements (2yr invoice-level sales)"
+      ],
+      "formulas": [],
+      "evidence": "global brewer TPO approach · beverage bottler Trade Analytics · smokeless-tobacco company workshop",
+      "canon_attributes": [
+        "modelForm (log-log mixed effects)",
+        "decomposition[]",
+        "trueLift",
+        "trueRoi",
+        "whatIfSimulator",
+        "schemeRecommender (genetic algo, Lagrange slabs)",
+        "dataRequirements (2yr invoice-level sales)"
+      ],
+      "canon_ref": "§21",
+      "canon_title": "LiftModel / TPO",
+      "canon_joins": "",
+      "canon_evidence": "global brewer TPO approach · beverage bottler Trade Analytics · smokeless-tobacco company workshop"
+    },
+    {
+      "key": "g2n",
+      "name": "GrossToNetWaterfall",
+      "group": "trade",
+      "group_name": "02 Trade, Promotions & RGM",
+      "color": "#8A4FD0",
+      "kind": "domain",
+      "definition": "The revenue-side P&L contract between the commercial domains and finance. Three verbatim instances: beer (GT → duty → conditional/unconditional discounts → NT), HPC (GS → SRA → trade → realized → net → GP → marketing profit), tobacco (CPTO net of tax → TCI → supplier share).",
+      "attributes": [
+        "waterfallInstance (beer/HPC/tobacco)",
+        "lineItems[]",
+        "conditionalVsUnconditional",
+        "sraSubtotal",
+        "totalTrade",
+        "realizedSales",
+        "marketingProfit",
+        "cptoNetOfTax",
+        "tciBlock"
+      ],
+      "formulas": [],
+      "evidence": "High Level PnL Structure xlsx · HPC major Customer Profitability reference · tobacco major trade-terms policy manual",
+      "canon_attributes": [
+        "waterfallInstance (beer/HPC/tobacco)",
+        "lineItems[]",
+        "conditionalVsUnconditional",
+        "sraSubtotal",
+        "totalTrade",
+        "realizedSales",
+        "marketingProfit",
+        "cptoNetOfTax",
+        "tciBlock"
+      ],
+      "canon_ref": "§22",
+      "canon_title": "GrossToNetWaterfall",
+      "canon_joins": "",
+      "canon_evidence": "High Level PnL Structure xlsx · HPC major Customer Profitability reference · tobacco major trade-terms policy manual"
+    },
+    {
+      "key": "consumer",
+      "name": "Consumer / LoyaltyMember",
+      "group": "marketing",
+      "group_name": "03 Marketing & Consumer",
+      "color": "#C05A9E",
+      "kind": "domain",
+      "definition": "The end consumer with identity, demographics, contactability, tier and points; scored with engagement, share of wallet, churn propensity, NPS, LTV; ~68-column physical schema evidenced.",
+      "attributes": [
+        "customerId",
+        "loyaltyId",
+        "demographics",
+        "contactabilityFlags",
+        "tier",
+        "pointsBalance",
+        "registrationChannel",
+        "engagementScore",
+        "shareOfWallet",
+        "churnPropensity",
+        "nps",
+        "ltv",
+        "rfmProfile"
+      ],
+      "formulas": [],
+      "evidence": "Shopperinsight customer attributes · CVM Data Dictionary · persona decks",
+      "canon_attributes": [
+        "customerId",
+        "loyaltyId",
+        "demographics",
+        "contactabilityFlags",
+        "tier",
+        "pointsBalance",
+        "registrationChannel",
+        "engagementScore",
+        "shareOfWallet",
+        "churnPropensity",
+        "nps",
+        "ltv",
+        "rfmProfile"
+      ],
+      "canon_ref": "§23",
+      "canon_title": "Consumer / LoyaltyMember",
+      "canon_joins": "",
+      "canon_evidence": "Shopperinsight customer attributes · CVM Data Dictionary · persona decks"
+    },
+    {
+      "key": "segment",
+      "name": "Segment / Persona",
+      "group": "marketing",
+      "group_name": "03 Marketing & Consumer",
+      "color": "#C05A9E",
+      "kind": "domain",
+      "definition": "Segment: typed (value/behaviour/attitude) with parameters, centroids and archived assignments. Persona: narrative instance on micro-segments with propensity-score matching, evolution stages and functional/emotional needs; white-space method exposes underserved segments.",
+      "attributes": [
+        "segmentId",
+        "segmentType",
+        "parameters",
+        "centroid",
+        "archivedAssignments[]",
+        "referencePersona",
+        "propensityScoreMatch",
+        "evolutionStage",
+        "functionalNeed",
+        "emotionalNeed"
+      ],
+      "formulas": [],
+      "evidence": "CVM data model · Persona Development Approach · a vaping product line lifecycle · brewer beer personas",
+      "canon_attributes": [
+        "segmentId",
+        "segmentType",
+        "parameters",
+        "centroid",
+        "archivedAssignments[]",
+        "referencePersona",
+        "propensityScoreMatch",
+        "evolutionStage",
+        "functionalNeed",
+        "emotionalNeed"
+      ],
+      "canon_ref": "§24",
+      "canon_title": "Segment / Persona",
+      "canon_joins": "",
+      "canon_evidence": "CVM data model · Persona Development Approach · a vaping product line lifecycle · brewer beer personas"
+    },
+    {
+      "key": "campaign",
+      "name": "Campaign",
+      "group": "marketing",
+      "group_name": "03 Marketing & Consumer",
+      "color": "#C05A9E",
+      "kind": "domain",
+      "definition": "Hierarchy Marketing Plan → Program → Stage → Campaign → Wave → Offer → Communication → Response; measured TG-vs-CG with incremental response/spend, cost and ROI; contact-fatigue rules.",
+      "attributes": [
+        "objective",
+        "targetGroup/controlGroup/referenceGroup",
+        "channel",
+        "sourceCode",
+        "wave",
+        "offer",
+        "incrementalResponse",
+        "incrementalSpend",
+        "campaignCost",
+        "campaignRoi",
+        "contactFatigueRules"
+      ],
+      "formulas": [],
+      "evidence": "Shopper Insights user guide · CVM metrics workbook",
+      "canon_attributes": [
+        "objective",
+        "targetGroup/controlGroup/referenceGroup",
+        "channel",
+        "sourceCode",
+        "wave",
+        "offer",
+        "incrementalResponse",
+        "incrementalSpend",
+        "campaignCost",
+        "campaignRoi",
+        "contactFatigueRules"
+      ],
+      "canon_ref": "§25",
+      "canon_title": "Campaign",
+      "canon_joins": "",
+      "canon_evidence": "Shopper Insights user guide · CVM metrics workbook"
+    },
+    {
+      "key": "media",
+      "name": "Touchpoint / MediaSpend",
+      "group": "marketing",
+      "group_name": "03 Marketing & Consumer",
+      "color": "#C05A9E",
+      "kind": "domain",
+      "definition": "Channel taxonomy (paid/owned/earned × ATL/BTL/TTL × digital × physical) and the Nielsen-style spend record: market → advertiser → category → product → media → network → outlet × period, with companion TRP data.",
+      "attributes": [
+        "channelClass (paid/owned/earned)",
+        "atlBtlTtl",
+        "mediaType",
+        "network",
+        "outlet (title/station)",
+        "spend",
+        "trp"
+      ],
+      "formulas": [],
+      "evidence": "oral-care major media-spend & TRP samples · Traditional ATL/BTL deck · MPM KPI catalogue",
+      "canon_attributes": [
+        "channelClass (paid/owned/earned)",
+        "atlBtlTtl",
+        "mediaType",
+        "network",
+        "outlet (title/station)",
+        "spend",
+        "trp"
+      ],
+      "canon_ref": "§26",
+      "canon_title": "Touchpoint / MediaSpend",
+      "canon_joins": "",
+      "canon_evidence": "oral-care major media-spend & TRP samples · Traditional ATL/BTL deck · MPM KPI catalogue"
+    },
+    {
+      "key": "cdp",
+      "name": "CDPProfile / IdentityKey",
+      "group": "marketing",
+      "group_name": "03 Marketing & Consumer",
+      "color": "#C05A9E",
+      "kind": "domain",
+      "definition": "Identity resolution: hard keys (phone, email), private keys (cookie, device), soft keys (name, address, IP), unmatched pool re-matched later; pipeline sources → match → unified store → segmentation → activation/syndication. CDP ≠ DMP ≠ CRM distinctions evidenced.",
+      "attributes": [
+        "hardKeys",
+        "privateKeys",
+        "softKeys",
+        "unmatchedPool",
+        "unifiedProfileStore",
+        "activationSyndication (DMP/DSP/CRM)"
+      ],
+      "formulas": [],
+      "evidence": "Indian FMCG major CDP Technical Solution Design (AWS) · CDP assessment framework · a web-personalization CDP data model",
+      "canon_attributes": [
+        "hardKeys",
+        "privateKeys",
+        "softKeys",
+        "unmatchedPool",
+        "unifiedProfileStore",
+        "activationSyndication (DMP/DSP/CRM)"
+      ],
+      "canon_ref": "§27",
+      "canon_title": "CDPProfile / IdentityKey",
+      "canon_joins": "",
+      "canon_evidence": "Indian FMCG major CDP Technical Solution Design (AWS) · CDP assessment framework · a web-personalization CDP data model"
+    },
+    {
+      "key": "research",
+      "name": "MarketResearch / SocialSignal",
+      "group": "marketing",
+      "group_name": "03 Marketing & Consumer",
+      "color": "#C05A9E",
+      "kind": "domain",
+      "definition": "MR study objects (U&A, concept test, conjoint/MaxDiff/TURF, NPS, brand equity) across the product lifecycle; social listening signals (mentions, sentiment, influencers, crisis alerts) as command-center consumables.",
+      "attributes": [
+        "studyType",
+        "mode (online/phone/F2F)",
+        "lifecycleStage",
+        "panelSource (Nielsen/IRI/Kantar)",
+        "mentions",
+        "sentiment",
+        "influencers[]",
+        "crisisAlerts"
+      ],
+      "formulas": [],
+      "evidence": "Market Research Overview · a social-listening platform · Rapid Insight hypothesis library",
+      "canon_attributes": [
+        "studyType",
+        "mode (online/phone/F2F)",
+        "lifecycleStage",
+        "panelSource (Nielsen/IRI/Kantar)",
+        "mentions",
+        "sentiment",
+        "influencers[]",
+        "crisisAlerts"
+      ],
+      "canon_ref": "§28",
+      "canon_title": "MarketResearch / SocialSignal",
+      "canon_joins": "",
+      "canon_evidence": "Market Research Overview · a social-listening platform · Rapid Insight hypothesis library"
+    },
+    {
+      "key": "forecast",
+      "name": "DemandForecast",
+      "group": "supply",
+      "group_name": "04 Supply Chain & Procurement",
+      "color": "#2FA096",
+      "kind": "domain",
+      "definition": "The demand signal: FCSTRPT schema (demand unit/group/location, base vs non-base history & forecast), decomposition into base + influenced demand, driver models (WAS × seasonality × elasticity × calendar), 27-method library + ML, abnormal-demand log.",
+      "attributes": [
+        "demandUnit (SKU)",
+        "demandGroup",
+        "location",
+        "baseHist/nonBaseHist",
+        "baseFcst/nonBaseFcst",
+        "fcstDate",
+        "modelType",
+        "decomposition",
+        "methodLibrary (27 + ML)",
+        "abnormalDemandLog",
+        "consensusVariance"
+      ],
+      "formulas": [],
+      "evidence": "HPC major FCSTRPT export · tobacco major Demand Forecast Workshop (driver-management model) · Anaplan connected planning",
+      "canon_attributes": [
+        "demandUnit (SKU)",
+        "demandGroup",
+        "location",
+        "baseHist/nonBaseHist",
+        "baseFcst/nonBaseFcst",
+        "fcstDate",
+        "modelType",
+        "decomposition",
+        "methodLibrary (27 + ML)",
+        "abnormalDemandLog",
+        "consensusVariance"
+      ],
+      "canon_ref": "§29",
+      "canon_title": "DemandForecast",
+      "canon_joins": "",
+      "canon_evidence": "HPC major FCSTRPT export · tobacco major Demand Forecast Workshop (driver-management model) · Anaplan connected planning"
+    },
+    {
+      "key": "sandop",
+      "name": "S&OP Plan",
+      "group": "supply",
+      "group_name": "04 Supply Chain & Procurement",
+      "color": "#2FA096",
+      "kind": "domain",
+      "definition": "The 18-month rolling integrated plan run as a monthly 5-meeting cycle with named owners: Product Review → Demand Review → Supply & Material Review → Pre-S&OP → Executive S&OP; extends financially to gross profit and EBITDA with scenarios.",
+      "attributes": [
+        "cycleMonth",
+        "meetings[] (owner, participants)",
+        "gapClosingActions[]",
+        "unconstrainedDemand",
+        "constrainedDemand",
+        "scenarioSet",
+        "financialExtension"
+      ],
+      "formulas": [],
+      "evidence": "bakery group S&OP IT Roadmap (5 meetings, owners, weekly calendar) · consultancy/Anaplan variant",
+      "canon_attributes": [
+        "cycleMonth",
+        "meetings[] (owner, participants)",
+        "gapClosingActions[]",
+        "unconstrainedDemand",
+        "constrainedDemand",
+        "scenarioSet",
+        "financialExtension"
+      ],
+      "canon_ref": "§30",
+      "canon_title": "S&OP Plan",
+      "canon_joins": "",
+      "canon_evidence": "bakery group S&OP IT Roadmap (5 meetings, owners, weekly calendar) · consultancy/Anaplan variant"
+    },
+    {
+      "key": "supplyplan",
+      "name": "SupplyPlan / RCCP",
+      "group": "supply",
+      "group_name": "04 Supply Chain & Procurement",
+      "color": "#2FA096",
+      "kind": "domain",
+      "definition": "Production & material response: requirement analyses, make-vs-subcontract, allocation & sourcing plans, constrained flags; RCCP maps SKU families to factory lines with speeds and scenario levers (speed/OEE, shift pattern, add line).",
+      "attributes": [
+        "productionRequirement",
+        "rmRequirement",
+        "makeVsSubcontract",
+        "allocationPlan",
+        "sourcingPlan",
+        "constrainedFlag",
+        "skuFamily→factoryLine",
+        "lineSpeed",
+        "utilizationPct",
+        "scenarioLevers"
+      ],
+      "formulas": [],
+      "evidence": "Anaplan SC planning deck · bakery group planning org",
+      "canon_attributes": [
+        "productionRequirement",
+        "rmRequirement",
+        "makeVsSubcontract",
+        "allocationPlan",
+        "sourcingPlan",
+        "constrainedFlag",
+        "skuFamily→factoryLine",
+        "lineSpeed",
+        "utilizationPct",
+        "scenarioLevers"
+      ],
+      "canon_ref": "§31",
+      "canon_title": "SupplyPlan / RCCP",
+      "canon_joins": "",
+      "canon_evidence": "Anaplan SC planning deck · bakery group planning org"
+    },
+    {
+      "key": "inventory",
+      "name": "InventoryPosition / Policy",
+      "group": "supply",
+      "group_name": "04 Supply Chain & Procurement",
+      "color": "#2FA096",
+      "kind": "domain",
+      "definition": "Position per SKU × location (net stock, open orders, inbound STOs, days of supply) and MEIO-optimized policy: segmentation → service targets → optimization minimizing carrying + lost-sales + replenishment cost; slow-moving (>18d) and remnant (>90d) flags.",
+      "attributes": [
+        "totalStock",
+        "netStockAvailable",
+        "openSalesOrders",
+        "pendingInboundStos",
+        "businessDaysOfSupply",
+        "segmentation",
+        "serviceLevelTarget",
+        "safetyStock",
+        "strategy (MTS/MTO/VMI)",
+        "slowMovingFlag",
+        "remnantFlag"
+      ],
+      "formulas": [],
+      "evidence": "MEIO framework (Anaplan deck) · HPC major SMR reports & stock classes",
+      "canon_attributes": [
+        "totalStock",
+        "netStockAvailable",
+        "openSalesOrders",
+        "pendingInboundStos",
+        "businessDaysOfSupply",
+        "segmentation",
+        "serviceLevelTarget",
+        "safetyStock",
+        "strategy (MTS/MTO/VMI)",
+        "slowMovingFlag",
+        "remnantFlag"
+      ],
+      "canon_ref": "§32",
+      "canon_title": "InventoryPosition / Policy",
+      "canon_joins": "",
+      "canon_evidence": "MEIO framework (Anaplan deck) · HPC major SMR reports & stock classes"
+    },
+    {
+      "key": "network",
+      "name": "NetworkNode / Lane",
+      "group": "supply",
+      "group_name": "04 Supply Chain & Procurement",
+      "color": "#2FA096",
+      "kind": "domain",
+      "definition": "Physical network: supplier → factory → hub → RDC/DC/wholesale point → customer; nodes carry capacity, costs and days-of-supply norms; lanes carry mode, freight cost, lead time, FTL constraints. Redesign is a regular exercise.",
+      "attributes": [
+        "nodeType",
+        "capacity",
+        "fixedOpeningClosingCost",
+        "handlingCost",
+        "dosNorm",
+        "lane: mode",
+        "freightCost",
+        "leadTime",
+        "ftlConstraints",
+        "moq"
+      ],
+      "formulas": [],
+      "evidence": "Network Design & Optimization RACI (Llamasoft/JDA) · industry benchmark (2016/18) benchmark",
+      "canon_attributes": [
+        "nodeType",
+        "capacity",
+        "fixedOpeningClosingCost",
+        "handlingCost",
+        "dosNorm",
+        "lane: mode",
+        "freightCost",
+        "leadTime",
+        "ftlConstraints",
+        "moq"
+      ],
+      "canon_ref": "§33",
+      "canon_title": "NetworkNode / Lane",
+      "canon_joins": "",
+      "canon_evidence": "Network Design & Optimization RACI (Llamasoft/JDA) · industry benchmark (2016/18) benchmark"
+    },
+    {
+      "key": "orders",
+      "name": "SupplyOrders (SO/STO/PO/Shipment)",
+      "group": "supply",
+      "group_name": "04 Supply Chain & Procurement",
+      "color": "#2FA096",
+      "kind": "domain",
+      "definition": "The transactional movement objects: sales orders, stock transfer orders, purchase orders (PO vs non-PO), shipments with carriers and late-reason categories, trailer loads, pallets, invoices (3-way match).",
+      "attributes": [
+        "salesOrder",
+        "stockTransferOrder",
+        "transferOrder",
+        "purchaseOrder",
+        "shipment (carrier, lateReason)",
+        "trailerLoad",
+        "pallet",
+        "invoice (3-way match)"
+      ],
+      "formulas": [],
+      "evidence": "HPC major SC metric model & information model",
+      "canon_attributes": [
+        "salesOrder",
+        "stockTransferOrder",
+        "transferOrder",
+        "purchaseOrder",
+        "shipment (carrier, lateReason)",
+        "trailerLoad",
+        "pallet",
+        "invoice (3-way match)"
+      ],
+      "canon_ref": "§34",
+      "canon_title": "SupplyOrders (SO/STO/PO/Shipment)",
+      "canon_joins": "",
+      "canon_evidence": "HPC major SC metric model & information model"
+    },
+    {
+      "key": "supplier",
+      "name": "Supplier / ProcurementCategory",
+      "group": "supply",
+      "group_name": "04 Supply Chain & Procurement",
+      "color": "#2FA096",
+      "kind": "domain",
+      "definition": "Vendor master with OTIF, lead time, reject/waiver rates and scorecards; category taxonomy direct (raw materials, packaging, logistics) vs indirect & traded; savings initiatives with the pipeline identified → approved → budgeted → booked and the finance-to-procurement bridge.",
+      "attributes": [
+        "vendorId",
+        "categoryAssignment",
+        "otif",
+        "leadTime",
+        "rejectRate",
+        "waiverRate",
+        "concentrationShare",
+        "scorecard",
+        "savingsPipelineStage",
+        "commodityPriceVsBudget",
+        "contractCoverage"
+      ],
+      "formulas": [],
+      "evidence": "bakery group procurement org + dashboard vision · strategy consultancy digital-procurement booklet (12 use cases)",
+      "canon_attributes": [
+        "vendorId",
+        "categoryAssignment",
+        "otif",
+        "leadTime",
+        "rejectRate",
+        "waiverRate",
+        "concentrationShare",
+        "scorecard",
+        "savingsPipelineStage",
+        "commodityPriceVsBudget",
+        "contractCoverage"
+      ],
+      "canon_ref": "§35",
+      "canon_title": "Supplier / ProcurementCategory",
+      "canon_joins": "",
+      "canon_evidence": "bakery group procurement org + dashboard vision · strategy consultancy digital-procurement booklet (12 use cases)"
+    },
+    {
+      "key": "plant",
+      "name": "Plant / Line / Machine",
+      "group": "mfg",
+      "group_name": "05 Manufacturing & Quality",
+      "color": "#A0784A",
+      "kind": "domain",
+      "definition": "Region → site → production line → machine → shift → operator; carries line speeds, changeover matrices, raw OEE (observed ~40–50% on real lines) and capacity utilization.",
+      "attributes": [
+        "lineSpeed",
+        "plannedRunTime",
+        "changeoverMatrix",
+        "rawOee",
+        "capacityUtilization",
+        "shift",
+        "operator"
+      ],
+      "formulas": [],
+      "evidence": "HPC major plant financial report + manufacturing metric model · tobacco major global MES program",
+      "canon_attributes": [
+        "lineSpeed",
+        "plannedRunTime",
+        "changeoverMatrix",
+        "rawOee",
+        "capacityUtilization",
+        "shift",
+        "operator"
+      ],
+      "canon_ref": "§36",
+      "canon_title": "Plant / Line / Machine",
+      "canon_joins": "",
+      "canon_evidence": "HPC major plant financial report + manufacturing metric model · tobacco major global MES program"
+    },
+    {
+      "key": "prodorder",
+      "name": "ProductionOrder / BOM",
+      "group": "mfg",
+      "group_name": "05 Manufacturing & Quality",
+      "color": "#A0784A",
+      "kind": "domain",
+      "definition": "The make event: planned vs actual quantity, TECO timestamp (→ production lead time), yield, verbatim variance formulas (labour efficiency, material usage/price); BOM with costing and the 42-day on-time release rule.",
+      "attributes": [
+        "orderId",
+        "plannedQty/actualQty",
+        "tecoTimestamp",
+        "productionLeadTime",
+        "yield",
+        "varianceSet",
+        "bom: costedFlag",
+        "releaseWindow (42-day)",
+        "bomAccuracy"
+      ],
+      "formulas": [],
+      "evidence": "HPC major manufacturing metric model · quality scorecard",
+      "canon_attributes": [
+        "orderId",
+        "plannedQty/actualQty",
+        "tecoTimestamp",
+        "productionLeadTime",
+        "yield",
+        "varianceSet",
+        "bom: costedFlag",
+        "releaseWindow (42-day)",
+        "bomAccuracy"
+      ],
+      "canon_ref": "§37",
+      "canon_title": "ProductionOrder / BOM",
+      "canon_joins": "",
+      "canon_evidence": "HPC major manufacturing metric model · quality scorecard"
+    },
+    {
+      "key": "quality",
+      "name": "Maintenance / Quality / LossEvent",
+      "group": "mfg",
+      "group_name": "05 Manufacturing & Quality",
+      "color": "#A0784A",
+      "kind": "domain",
+      "definition": "Maintenance (notification→order, MTTR/MTBF, preventive vs breakdown), quality records (NCR, complaints PPM, RFT, rework/recall, vendor rejects) and the OEE loss tree (availability / performance / quality losses) with waste causality.",
+      "attributes": [
+        "mttr",
+        "mtbf",
+        "pmCompletionPct",
+        "preventiveVsBreakdownRatio",
+        "ncr",
+        "complaintsPpm",
+        "rft",
+        "reworkCost",
+        "lossClass (availability/performance/quality)",
+        "wasteCategory",
+        "dartRate"
+      ],
+      "formulas": [],
+      "evidence": "HPC major metric model — manufacturing (verbatim formulas) · tobacco major digital-manufacturing booklet",
+      "canon_attributes": [
+        "mttr",
+        "mtbf",
+        "pmCompletionPct",
+        "preventiveVsBreakdownRatio",
+        "ncr",
+        "complaintsPpm",
+        "rft",
+        "reworkCost",
+        "lossClass (availability/performance/quality)",
+        "wasteCategory",
+        "dartRate"
+      ],
+      "canon_ref": "§38",
+      "canon_title": "Maintenance / Quality / LossEvent",
+      "canon_joins": "",
+      "canon_evidence": "HPC major metric model — manufacturing (verbatim formulas) · tobacco major digital-manufacturing booklet"
+    },
+    {
+      "key": "npd",
+      "name": "NPDProject",
+      "group": "npd",
+      "group_name": "06 Innovation & NPD",
+      "color": "#4EA36A",
+      "kind": "domain",
+      "definition": "The innovation pipeline object: gate status, project class, launch window × country, pipeline value (k€) with deltas vs prior snapshot, FY1/Y2 sales & GP%, health RAGs, private-label and on-hold flags.",
+      "attributes": [
+        "projectId",
+        "market(s)",
+        "brand",
+        "skuCount",
+        "gateStatus",
+        "projectClass",
+        "launchWindow",
+        "pipelineValueKeur",
+        "fy1Sales/y2Sales/gpPct",
+        "healthRags",
+        "onHoldFlag"
+      ],
+      "formulas": [],
+      "evidence": "bakery group NPD pipeline + 1-pager · HPC major NPI review",
+      "canon_attributes": [
+        "projectId",
+        "market(s)",
+        "brand",
+        "skuCount",
+        "gateStatus",
+        "projectClass",
+        "launchWindow",
+        "pipelineValueKeur",
+        "fy1Sales/y2Sales/gpPct",
+        "healthRags",
+        "onHoldFlag"
+      ],
+      "canon_ref": "§39",
+      "canon_title": "NPDProject",
+      "canon_joins": "",
+      "canon_evidence": "bakery group NPD pipeline + 1-pager · HPC major NPI review"
+    },
+    {
+      "key": "gate",
+      "name": "Gate",
+      "group": "npd",
+      "group_name": "06 Innovation & NPD",
+      "color": "#4EA36A",
+      "kind": "domain",
+      "definition": "Stage-gate governance: Discovery → Charter → Feasibility → Development → Qualification → SKU/Launch approval → Implementation (or G1/G2 embedded in the S&OP cycle); investment decisions precede approval.",
+      "attributes": [
+        "gateMeetingDate",
+        "approvalType",
+        "sandOPCycleLink",
+        "ragStatuses"
+      ],
+      "formulas": [],
+      "evidence": "HPC major NPD Apr-16 NPI review · bakery group gate labels",
+      "canon_attributes": [
+        "gateMeetingDate",
+        "approvalType",
+        "sandOPCycleLink",
+        "ragStatuses"
+      ],
+      "canon_ref": "§40",
+      "canon_title": "Gate",
+      "canon_joins": "",
+      "canon_evidence": "HPC major NPD Apr-16 NPI review · bakery group gate labels"
+    },
+    {
+      "key": "launch",
+      "name": "LaunchRecord",
+      "group": "npd",
+      "group_name": "06 Innovation & NPD",
+      "color": "#4EA36A",
+      "kind": "domain",
+      "definition": "Per SKU × retailer: presentation date, listing decision, in-store date target vs actual, marketing & production dates, distribution build (store counts, WTD%), price point, exclusivity — reviewed post-launch vs the launchgate case.",
+      "attributes": [
+        "presentationDate",
+        "listingDecision",
+        "inStoreDateTargetActual",
+        "distributionBuild (stores, wtdPct)",
+        "pricePoint",
+        "exclusivityFlag",
+        "vsLaunchgateReview"
+      ],
+      "formulas": [],
+      "evidence": "HPC major NPD Tracker 2016 · UK NPD 2015 summary",
+      "canon_attributes": [
+        "presentationDate",
+        "listingDecision",
+        "inStoreDateTargetActual",
+        "distributionBuild (stores, wtdPct)",
+        "pricePoint",
+        "exclusivityFlag",
+        "vsLaunchgateReview"
+      ],
+      "canon_ref": "§41",
+      "canon_title": "LaunchRecord",
+      "canon_joins": "",
+      "canon_evidence": "HPC major NPD Tracker 2016 · UK NPD 2015 summary"
+    },
+    {
+      "key": "pnl",
+      "name": "PnL ReportingLineItem",
+      "group": "finance",
+      "group_name": "07 Finance & EPM",
+      "color": "#6E7FBF",
+      "kind": "domain",
+      "definition": "The account roll-up (BPC RLI pattern) instantiating a gross-to-net waterfall down to net income; fourth instance: global brewer IBP with MACO (= gross turnover − variable industrial − variable logistics cost) → ZBB → EBITDA → operational free cash flow.",
+      "attributes": [
+        "rliCode",
+        "parent",
+        "sign",
+        "formulaRefs (ISP%, retention, MPC/statCase)",
+        "granularityMatrix (SKU vs brand vs company)",
+        "maco",
+        "zbbBlock"
+      ],
+      "formulas": [],
+      "evidence": "PNL Report by RU and PC1 (beverage major BPC) · HPC major consolidated P&L · Anaplan COE overview",
+      "canon_attributes": [
+        "rliCode",
+        "parent",
+        "sign",
+        "formulaRefs (ISP%, retention, MPC/statCase)",
+        "granularityMatrix (SKU vs brand vs company)",
+        "maco",
+        "zbbBlock"
+      ],
+      "canon_ref": "§42",
+      "canon_title": "PnL ReportingLineItem",
+      "canon_joins": "",
+      "canon_evidence": "PNL Report by RU and PC1 (beverage major BPC) · HPC major consolidated P&L · Anaplan COE overview"
+    },
+    {
+      "key": "version",
+      "name": "PlanningVersion / Scenario",
+      "group": "finance",
+      "group_name": "07 Finance & EPM",
+      "color": "#6E7FBF",
+      "kind": "domain",
+      "definition": "Version set: actual · plan/budget (annual plan, 1YP) · reforecasts (PPR-n = n months actual + remainder forecast) · latest estimate · prior year · constant-FX variants · scenarios; performance vs posting period; organic flags; ZBB workflow.",
+      "attributes": [
+        "versionType",
+        "pprN",
+        "latestEstimate",
+        "constantFxVariants",
+        "organicFlag",
+        "driverBasedInputs",
+        "zbbWorkflow"
+      ],
+      "formulas": [],
+      "evidence": "HPC major BPC dimension set + Finance MoM (PPR cycle) · beverage group FP&A proposal · global-brewer ZBB",
+      "canon_attributes": [
+        "versionType",
+        "pprN",
+        "latestEstimate",
+        "constantFxVariants",
+        "organicFlag",
+        "driverBasedInputs",
+        "zbbWorkflow"
+      ],
+      "canon_ref": "§43",
+      "canon_title": "PlanningVersion / Scenario",
+      "canon_joins": "",
+      "canon_evidence": "HPC major BPC dimension set + Finance MoM (PPR cycle) · beverage group FP&A proposal · global-brewer ZBB"
+    },
+    {
+      "key": "profitability",
+      "name": "ProfitabilityRecord",
+      "group": "finance",
+      "group_name": "07 Finance & EPM",
+      "color": "#6E7FBF",
+      "kind": "domain",
+      "definition": "Performance-date-based customer × SKU P&L, COPA-extended: full G2N to marketing profit with allocation logic, TPM-liability reconciliation, cost-to-serve extension and the CPP margin ladder (material → contribution → plant margin); whale-curve analysis.",
+      "attributes": [
+        "grain (customer × brand/MPG × size × month)",
+        "allocationLogic",
+        "tpmLiabilityReconciliation",
+        "costToServe",
+        "marginLadder (MM→CM→PM)",
+        "whaleCurve"
+      ],
+      "formulas": [],
+      "evidence": "HPC major Customer Profitability reference + solution options · nutrition group CPP · dairy cooperative EPM",
+      "canon_attributes": [
+        "grain (customer × brand/MPG × size × month)",
+        "allocationLogic",
+        "tpmLiabilityReconciliation",
+        "costToServe",
+        "marginLadder (MM→CM→PM)",
+        "whaleCurve"
+      ],
+      "canon_ref": "§44",
+      "canon_title": "ProfitabilityRecord",
+      "canon_joins": "",
+      "canon_evidence": "HPC major Customer Profitability reference + solution options · nutrition group CPP · dairy cooperative EPM"
+    },
+    {
+      "key": "debtor",
+      "name": "DebtorPosition / CreditPolicy",
+      "group": "finance",
+      "group_name": "07 Finance & EPM",
+      "color": "#6E7FBF",
+      "kind": "domain",
+      "definition": "Receivables analytics: ARDSO, ageing buckets with migration % (leading bad-debt indicator), follow-up efficiency, dispute taxonomy, Altman Z-score banding, payer-behaviour segments, insured exposure, provisioning models.",
+      "attributes": [
+        "arDso",
+        "ageingBuckets[]",
+        "bucketMigrationPct",
+        "overduePct",
+        "doubtfulRule (>120d)",
+        "followUpEfficiency",
+        "disputes[]",
+        "zScore",
+        "payerBehaviourSegment",
+        "insuredExposure",
+        "creditOverrides"
+      ],
+      "formulas": [],
+      "evidence": "nutrition group metric lists + debtor dashboards (verbatim formulas) · HPC major working-capital report",
+      "canon_attributes": [
+        "arDso",
+        "ageingBuckets[]",
+        "bucketMigrationPct",
+        "overduePct",
+        "doubtfulRule (>120d)",
+        "followUpEfficiency",
+        "disputes[]",
+        "zScore",
+        "payerBehaviourSegment",
+        "insuredExposure",
+        "creditOverrides"
+      ],
+      "canon_ref": "§45",
+      "canon_title": "DebtorPosition / CreditPolicy",
+      "canon_joins": "",
+      "canon_evidence": "nutrition group metric lists + debtor dashboards (verbatim formulas) · HPC major working-capital report"
+    },
+    {
+      "key": "coe",
+      "name": "PlanningCoE / EPM Model",
+      "group": "finance",
+      "group_name": "07 Finance & EPM",
+      "color": "#6E7FBF",
+      "kind": "domain",
+      "definition": "The governance object: 4 operating-model structure options, hub-spoke-crew roles, 90-day scorecards and SLA tiers; v1.1 adds the CFO-agenda pillars, the 4-phase finance-transformation lifecycle, the Lagging→Pioneering maturity model, shared-services scope and finance-cost benchmarks (median 1.24% of sales, best-in-class 0.61%; world-class close ≈2 days).",
+      "attributes": [
+        "structureOptions[]",
+        "hubSpokeCrewRoles",
+        "ninetyDayScorecard",
+        "slaTiers",
+        "epmMaturity",
+        "cfoAgendaPillars[]",
+        "transformationLifecycle",
+        "maturityModel (Lagging→Pioneering)",
+        "sharedServicesScope",
+        "financeCostPctSales"
+      ],
+      "formulas": [],
+      "evidence": "global-brewer planning-CoE decks · tobacco major Approach for Planning COE · consultancy CFO-agenda deck · FPM practice decks · benchmark studies",
+      "canon_attributes": [
+        "structureOptions[]",
+        "hubSpokeCrewRoles",
+        "ninetyDayScorecard",
+        "slaTiers",
+        "epmMaturity",
+        "cfoAgendaPillars[]",
+        "transformationLifecycle",
+        "maturityModel (Lagging→Pioneering)",
+        "sharedServicesScope",
+        "financeCostPctSales"
+      ],
+      "canon_ref": "§46",
+      "canon_title": "PlanningCoE / EPM Model",
+      "canon_joins": "",
+      "canon_evidence": "global-brewer planning-CoE decks · tobacco major Approach for Planning COE · consultancy CFO-agenda deck · FPM practice decks · benchmark studies"
+    },
+    {
+      "key": "costing",
+      "name": "CostingAllocationModel",
+      "group": "finance",
+      "group_name": "07 Finance & EPM",
+      "color": "#6E7FBF",
+      "kind": "domain",
+      "definition": "The formal costing machinery: standard costing (4-element system, management by exception) with the full variance taxonomy (material price/usage incl. mix & yield, labour, overhead expenditure/efficiency/volume, planning vs operational), marginal vs absorption reconciliation, two-stage ABC and time-driven ABC, the cost build-up ladder and shared-services chargeback (actual-cost vs standard-price; waterfall/recursive/reciprocal).",
+      "attributes": [
+        "costingTechnique",
+        "standardCostingSystem",
+        "varianceTaxonomy",
+        "costBuildUpLadder (Prime→Works→COGM→COGS→COS)",
+        "abcCalculationPath",
+        "tdAbcTimeEquations",
+        "absorptionMechanics",
+        "sharedServicesChargeback",
+        "idleCapacityCost",
+        "responsibilityCenterTaxonomy"
+      ],
+      "formulas": [],
+      "evidence": "professional-accounting-body costing guides (verbatim) · FPM costing framework & battle cards · worked ABC examples · shared-services costing white papers",
+      "canon_attributes": [
+        "costingTechnique",
+        "standardCostingSystem",
+        "varianceTaxonomy",
+        "costBuildUpLadder (Prime→Works→COGM→COGS→COS)",
+        "abcCalculationPath",
+        "tdAbcTimeEquations",
+        "absorptionMechanics",
+        "sharedServicesChargeback",
+        "idleCapacityCost",
+        "responsibilityCenterTaxonomy"
+      ],
+      "canon_ref": "§47",
+      "canon_title": "CostingAllocationModel",
+      "canon_joins": "",
+      "canon_evidence": "professional-accounting-body costing guides (verbatim) · FPM costing framework & battle cards · worked ABC examples · shared-services costing white papers"
+    },
+    {
+      "key": "treasury",
+      "name": "TreasuryFunction / WC Program",
+      "group": "finance",
+      "group_name": "07 Finance & EPM",
+      "color": "#6E7FBF",
+      "kind": "domain",
+      "definition": "The instrument-and-program layer above DebtorPosition: treasury lead roles (survey-evidenced), the CCC managed through the P2P / Forecast-to-Fulfill / O2C process triad, working-capital governance splits, financing instruments (reverse factoring, factoring, forfaiting, cash pooling), bad-debt value management, and sector WCR/CCC benchmarks.",
+      "attributes": [
+        "treasuryLeadRoles[]",
+        "strategicShift",
+        "cccProcessTriad (P2P/F2F/O2C)",
+        "wcGovernance",
+        "instruments[]",
+        "badDebtValueMgmt",
+        "benchmarks (WCR 15–25% consumer goods)"
+      ],
+      "formulas": [],
+      "evidence": "treasury-association & pan-European treasurer surveys · Big-4/strategy-consultancy WC papers · FPM working-capital offering · treasury case studies",
+      "canon_attributes": [
+        "treasuryLeadRoles[]",
+        "strategicShift",
+        "cccProcessTriad (P2P/F2F/O2C)",
+        "wcGovernance",
+        "instruments[]",
+        "badDebtValueMgmt",
+        "benchmarks (WCR 15–25% consumer goods)"
+      ],
+      "canon_ref": "§48",
+      "canon_title": "TreasuryFunction / WC Program",
+      "canon_joins": "",
+      "canon_evidence": "treasury-association & pan-European treasurer surveys · Big-4/strategy-consultancy WC papers · FPM working-capital offering · treasury case studies"
+    },
+    {
+      "key": "riskctrl",
+      "name": "RiskControlFramework",
+      "group": "finance",
+      "group_name": "07 Finance & EPM",
+      "color": "#6E7FBF",
+      "kind": "domain",
+      "definition": "Governance, risk & internal control: control components (environment → risk assessment → response → control activities → monitoring), risk/control universes with fraud flags, DOA & SOD matrices, KRIs, 100%-population risk analytics, the full P2P policy anatomy (verbatim thresholds, 3-way match, 11 KPIs), and accounting-standard events (IAS 36 impairment, dual-GST mechanics).",
+      "attributes": [
+        "controlComponents[]",
+        "riskUniverse/controlUniverse",
+        "doaMatrix",
+        "sodMatrix",
+        "kriRepository",
+        "riskAnalyticsMode (100% population)",
+        "policyAnatomy (P2P)",
+        "accountingStandardEvents (IAS 36, GST)",
+        "emergingRiskErm"
+      ],
+      "formulas": [],
+      "evidence": "FPM GRC capability decks · risk-analytics offering · GCC services company P2P policy (worked artifact) · Big-4 IAS 36 guide · GST readiness decks",
+      "canon_attributes": [
+        "controlComponents[]",
+        "riskUniverse/controlUniverse",
+        "doaMatrix",
+        "sodMatrix",
+        "kriRepository",
+        "riskAnalyticsMode (100% population)",
+        "policyAnatomy (P2P)",
+        "accountingStandardEvents (IAS 36, GST)",
+        "emergingRiskErm"
+      ],
+      "canon_ref": "§49",
+      "canon_title": "RiskControlFramework",
+      "canon_joins": "",
+      "canon_evidence": "FPM GRC capability decks · risk-analytics offering · GCC services company P2P policy (worked artifact) · Big-4 IAS 36 guide · GST readiness decks"
+    },
+    {
+      "key": "valuation",
+      "name": "ValuationModel / StatementAnalysis",
+      "group": "finance",
+      "group_name": "07 Finance & EPM",
+      "color": "#6E7FBF",
+      "kind": "domain",
+      "definition": "Financial statement analysis and enterprise valuation: the four-category ratio taxonomy (verbatim formulas incl. DuPont), analytical-restatement plays (LIFO↔FIFO, OBS add-backs, consolidation recasts), enterprise DCF ↔ economic-profit equivalence (EVA/CFROI/MVA), residual-income models, target-multiple formulas from ROIC/WACC/g, and M&A synergy-premium logic.",
+      "attributes": [
+        "ratioTaxonomy (activity/liquidity/solvency/profitability)",
+        "analyticalRestatements[]",
+        "dcfModel (NOPLAT, FCF, continuing value)",
+        "economicProfitEquivalence",
+        "residualIncomeModel",
+        "targetMultiples (EV/EBITDA, P/E, PEG…)",
+        "maSynergyLogic",
+        "riskPredictionModels (Z-score lineage)"
+      ],
+      "formulas": [],
+      "evidence": "statement-analysis courseware (incl. a beverage major's bottler-consolidation recast) · strategy-consultancy valuation handbook & model · investment-bank multiples primer · academic EVA/CFROI references",
+      "canon_attributes": [
+        "ratioTaxonomy (activity/liquidity/solvency/profitability)",
+        "analyticalRestatements[]",
+        "dcfModel (NOPLAT, FCF, continuing value)",
+        "economicProfitEquivalence",
+        "residualIncomeModel",
+        "targetMultiples (EV/EBITDA, P/E, PEG…)",
+        "maSynergyLogic",
+        "riskPredictionModels (Z-score lineage)"
+      ],
+      "canon_ref": "§50",
+      "canon_title": "ValuationModel / StatementAnalysis",
+      "canon_joins": "",
+      "canon_evidence": "statement-analysis courseware (incl. a beverage major's bottler-consolidation recast) · strategy-consultancy valuation handbook & model · investment-bank multiples primer · academic EVA/CFROI references"
+    },
+    {
+      "key": "epmplat",
+      "name": "EPMPlatformModel",
+      "group": "finance",
+      "group_name": "07 Finance & EPM",
+      "color": "#6E7FBF",
+      "kind": "domain",
+      "definition": "The technology object finance runs on: the canonical five-component CPM suite (BP&F, profitability modeling, strategy management, consolidation & close, reporting & disclosure), a 17-dimension reference planning model, the ABC allocation engine's calculation path, implementation methodology (phased releases, parallel run, hypercare; failure statistics), and the platform landscape with cloud-vs-on-premise economics.",
+      "attributes": [
+        "cpmSuiteComponents[] (5)",
+        "referenceDimensionModel (17 dims)",
+        "allocationEngine (LineItem→Driver→Activity→CostObject)",
+        "implementationMethodology",
+        "platformLandscape",
+        "integrationPatterns (drill-back, audit trail)"
+      ],
+      "formulas": [],
+      "evidence": "analyst-research suite definitions (verbatim) · wind-turbine manufacturer 17-dimension blueprint · bank shared-services costing re-engineering · glass-manufacturer phased implementation · platform white papers",
+      "canon_attributes": [
+        "cpmSuiteComponents[] (5)",
+        "referenceDimensionModel (17 dims)",
+        "allocationEngine (LineItem→Driver→Activity→CostObject)",
+        "implementationMethodology",
+        "platformLandscape",
+        "integrationPatterns (drill-back, audit trail)"
+      ],
+      "canon_ref": "§51",
+      "canon_title": "EPMPlatformModel",
+      "canon_joins": "",
+      "canon_evidence": "analyst-research suite definitions (verbatim) · wind-turbine manufacturer 17-dimension blueprint · bank shared-services costing re-engineering · glass-manufacturer phased implementation · platform white papers"
+    },
+    {
+      "key": "web",
+      "name": "WebSession / eB2BOrder",
+      "group": "ecom",
+      "group_name": "08 E-commerce, D2C & Strategy",
+      "color": "#D08A3E",
+      "kind": "domain",
+      "definition": "Digital ordering & behaviour: web sessions with UTM/funnel attributes; eB2B orders with order-method (platform vs call centre — the adoption metric), deal incrementality, cart abandonment. Adoption datum: B2B ~40% of sales → 70% ambition.",
+      "attributes": [
+        "utmParams",
+        "funnelSteps",
+        "device/geo",
+        "orderMethod (platform vs callCentre)",
+        "customerTier",
+        "dealIncrementality",
+        "cartAbandonmentEvent",
+        "channelSwitchFlag"
+      ],
+      "formulas": [],
+      "evidence": "global brewer B2B Overall Brief · B2B Engagement Platform requirements",
+      "canon_attributes": [
+        "utmParams",
+        "funnelSteps",
+        "device/geo",
+        "orderMethod (platform vs callCentre)",
+        "customerTier",
+        "dealIncrementality",
+        "cartAbandonmentEvent",
+        "channelSwitchFlag"
+      ],
+      "canon_ref": "§52",
+      "canon_title": "WebSession / eB2BOrder",
+      "canon_joins": "",
+      "canon_evidence": "global brewer B2B Overall Brief · B2B Engagement Platform requirements"
+    },
+    {
+      "key": "d2c",
+      "name": "D2CLead / FunnelStage",
+      "group": "ecom",
+      "group_name": "08 E-commerce, D2C & Strategy",
+      "color": "#D08A3E",
+      "kind": "domain",
+      "definition": "Direct-to-consumer funnel: leads by source (popup, email capture, referral, SEO), stages acquire → convert → retain → advocacy, HyperCare trial check-ins, party-of-sale (1st/2nd/3rd); common consumer key as the data-maturity gate.",
+      "attributes": [
+        "lead (email, sourceChannel)",
+        "funnelStage (ACR)",
+        "hyperCareCheckIns",
+        "partyOfSale",
+        "commonConsumerKey"
+      ],
+      "formulas": [],
+      "evidence": "tobacco major D2C Activation framework · next-gen products ACR journey · vaping-brand e-commerce performance",
+      "canon_attributes": [
+        "lead (email, sourceChannel)",
+        "funnelStage (ACR)",
+        "hyperCareCheckIns",
+        "partyOfSale",
+        "commonConsumerKey"
+      ],
+      "canon_ref": "§53",
+      "canon_title": "D2CLead / FunnelStage",
+      "canon_joins": "",
+      "canon_evidence": "tobacco major D2C Activation framework · next-gen products ACR journey · vaping-brand e-commerce performance"
+    },
+    {
+      "key": "benchmark",
+      "name": "BenchmarkPeerSet / CategorySegment",
+      "group": "ecom",
+      "group_name": "08 E-commerce, D2C & Strategy",
+      "color": "#D08A3E",
+      "kind": "domain",
+      "definition": "Strategy objects: peer benchmarking (financial levers, operations KPIs, project-level process benchmarking) and category segmentation with per-segment CAGR, share and decline drivers.",
+      "attributes": [
+        "peerSet",
+        "financialLevers[]",
+        "method (financial/operations/process)",
+        "market→category→segment",
+        "segmentCagr",
+        "volumeShare",
+        "declineDrivers"
+      ],
+      "formulas": [],
+      "evidence": "global brewer Benchmarking 2013 + workbook · Market Overview for GAC",
+      "canon_attributes": [
+        "peerSet",
+        "financialLevers[]",
+        "method (financial/operations/process)",
+        "market→category→segment",
+        "segmentCagr",
+        "volumeShare",
+        "declineDrivers"
+      ],
+      "canon_ref": "§54",
+      "canon_title": "BenchmarkPeerSet / CategorySegment",
+      "canon_joins": "",
+      "canon_evidence": "global brewer Benchmarking 2013 + workbook · Market Overview for GAC"
+    },
+    {
+      "key": "metric",
+      "name": "MetricDefinition",
+      "group": "data",
+      "group_name": "09 Data & Analytics Foundation",
+      "color": "#64748B",
+      "kind": "domain",
+      "definition": "The atom of the measurement system — the metric-model row: name, base data, source system, verbatim formula, UOM, time grains, dimension flags, priority, complexity, owning role, RAG thresholds, non-aggregation rules. 600+ catalogued; the join between business ontology and BI.",
+      "attributes": [
+        "area/function",
+        "metricName",
+        "baseData",
+        "dataSource (t-codes)",
+        "formula",
+        "uom",
+        "timeGrains[]",
+        "dimensionFlags[]",
+        "priority",
+        "technicalComplexity",
+        "leadLagClass",
+        "owningRole",
+        "ragThresholds",
+        "nonAggregationRule"
+      ],
+      "formulas": [],
+      "evidence": "Metric List Appendix A · HPC major metric models · tobacco major PI Metrics · MT Insights · nutrition group metric lists",
+      "canon_attributes": [
+        "area/function",
+        "metricName",
+        "baseData",
+        "dataSource (t-codes)",
+        "formula",
+        "uom",
+        "timeGrains[]",
+        "dimensionFlags[]",
+        "priority",
+        "technicalComplexity",
+        "leadLagClass",
+        "owningRole",
+        "ragThresholds",
+        "nonAggregationRule"
+      ],
+      "canon_ref": "§55",
+      "canon_title": "MetricDefinition",
+      "canon_joins": "",
+      "canon_evidence": "Metric List Appendix A · HPC major metric models · tobacco major PI Metrics · MT Insights · nutrition group metric lists"
+    },
+    {
+      "key": "fact",
+      "name": "FactSubject",
+      "group": "data",
+      "group_name": "09 Data & Analytics Foundation",
+      "color": "#64748B",
+      "kind": "domain",
+      "definition": "The transactional grains a CPG warehouse conforms (13-fact star pattern): sell-in · sell-out · syndicated sell-out · category sell-out · sales plan · estimates · fill rate (8 drop reasons) · OOS audit · SOS audit · asset visibility · promo implementation · competitor promo · P&L actuals.",
+      "attributes": [
+        "factName",
+        "grain (dims subset)",
+        "dropReasonDecomposition",
+        "etlAuditColumns",
+        "syndicatedTwin (Nielsen/IRI)"
+      ],
+      "formulas": [],
+      "evidence": "tobacco major MT Sales Data Mart dictionary (27 dims / 13 facts)",
+      "canon_attributes": [
+        "factName",
+        "grain (dims subset)",
+        "dropReasonDecomposition",
+        "etlAuditColumns",
+        "syndicatedTwin (Nielsen/IRI)"
+      ],
+      "canon_ref": "§56",
+      "canon_title": "FactSubject",
+      "canon_joins": "",
+      "canon_evidence": "tobacco major MT Sales Data Mart dictionary (27 dims / 13 facts)"
+    },
+    {
+      "key": "hier",
+      "name": "HierarchyNode (governance)",
+      "group": "data",
+      "group_name": "09 Data & Analytics Foundation",
+      "color": "#64748B",
+      "kind": "domain",
+      "definition": "Three governed classes: source hierarchies (maintained in ERP, replicated), attribute fields (governed master-data groupings) and attribute hierarchies (hierarchy-like reporting from governed attributes); MDM obligations to keep mapping/text tables in sync.",
+      "attributes": [
+        "hierClass (source/attributeField/attributeHierarchy)",
+        "maintainedIn",
+        "mappingTables",
+        "textTables",
+        "syncObligations"
+      ],
+      "formulas": [],
+      "evidence": "HPC major Business Hierarchies position paper · BW InfoObject design",
+      "canon_attributes": [
+        "hierClass (source/attributeField/attributeHierarchy)",
+        "maintainedIn",
+        "mappingTables",
+        "textTables",
+        "syncObligations"
+      ],
+      "canon_ref": "§57",
+      "canon_title": "HierarchyNode (governance)",
+      "canon_joins": "",
+      "canon_evidence": "HPC major Business Hierarchies position paper · BW InfoObject design"
+    },
+    {
+      "key": "source",
+      "name": "SourceSystem",
+      "group": "data",
+      "group_name": "09 Data & Analytics Foundation",
+      "color": "#64748B",
+      "kind": "domain",
+      "definition": "The canonical CPG landscape (pattern): SAP ECC/BW/APO/DSD/BPC · CRM/SFA · planning engines · TPM · EPOS/retailer POS · EDI · distributor feeds · syndicated data · loyalty/web/social · MES/SCADA/LIMS · 3rd-party feeds; with MDM ownership per object and the lakehouse principle 'no tool connects directly to sources'.",
+      "attributes": [
+        "systemId",
+        "dataDomains[]",
+        "extractMechanism",
+        "latency",
+        "mdmOwnership",
+        "lakehouseLayer (raw→enrich→serve→consume)"
+      ],
+      "formulas": [],
+      "evidence": "Data Assessment Report · tobacco major Data Platform Architecture v18 · HPC major & beverage group architectures",
+      "canon_attributes": [
+        "systemId",
+        "dataDomains[]",
+        "extractMechanism",
+        "latency",
+        "mdmOwnership",
+        "lakehouseLayer (raw→enrich→serve→consume)"
+      ],
+      "canon_ref": "§58",
+      "canon_title": "SourceSystem",
+      "canon_joins": "",
+      "canon_evidence": "Data Assessment Report · tobacco major Data Platform Architecture v18 · HPC major & beverage group architectures"
+    },
+    {
+      "key": "dq",
+      "name": "DataQualityDefect / MDM",
+      "group": "data",
+      "group_name": "09 Data & Analytics Foundation",
+      "color": "#64748B",
+      "kind": "domain",
+      "definition": "Logged defect classes (negative sell-in, share >100%, achievement >500%, plan = 0, drifting branch counts, missing history) and the MDM process: maturity ladder, six solution components, field-level CRUD ownership.",
+      "attributes": [
+        "defectClass",
+        "affectedSource",
+        "mdmMaturityLevel",
+        "sixComponents",
+        "fieldOwnership (CRUD per SAP field)",
+        "numberingStandards (GDS/GDSN/RFID)"
+      ],
+      "formulas": [],
+      "evidence": "MT Insights DQ log · HPC major MDM discussion · group data warehouse master-data lists",
+      "canon_attributes": [
+        "defectClass",
+        "affectedSource",
+        "mdmMaturityLevel",
+        "sixComponents",
+        "fieldOwnership (CRUD per SAP field)",
+        "numberingStandards (GDS/GDSN/RFID)"
+      ],
+      "canon_ref": "§59",
+      "canon_title": "DataQualityDefect / MDM",
+      "canon_joins": "",
+      "canon_evidence": "MT Insights DQ log · HPC major MDM discussion · group data warehouse master-data lists"
+    },
+    {
+      "key": "usecase",
+      "name": "AnalyticsUseCase",
+      "group": "data",
+      "group_name": "09 Data & Analytics Foundation",
+      "color": "#64748B",
+      "kind": "domain",
+      "definition": "The AI/ML portfolio object: algorithm class, maturity stage (descriptive→optimization), success probability, change-management risk ('planners might think their decision rights are taken away'), measured outcomes (TPO ROI 8→20; suggested order +3.2% revenue; MAPE 9–11%).",
+      "attributes": [
+        "useCase",
+        "domain",
+        "algorithmClass",
+        "maturityStage",
+        "successProbability",
+        "changeManagementRisk",
+        "measuredOutcome",
+        "deliveryVehicle (command center)"
+      ],
+      "formulas": [],
+      "evidence": "CPG Advanced Analytics decks · tobacco major planning use-case matrix · HPC major Enterprise Analytics Roadmap",
+      "canon_attributes": [
+        "useCase",
+        "domain",
+        "algorithmClass",
+        "maturityStage",
+        "successProbability",
+        "changeManagementRisk",
+        "measuredOutcome",
+        "deliveryVehicle (command center)"
+      ],
+      "canon_ref": "§60",
+      "canon_title": "AnalyticsUseCase",
+      "canon_joins": "",
+      "canon_evidence": "CPG Advanced Analytics decks · tobacco major planning use-case matrix · HPC major Enterprise Analytics Roadmap"
+    }
+  ],
+  "edges": [
+    {
+      "source": "product",
+      "target": "fact",
+      "label": "conforms",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "outlet",
+      "target": "fact",
+      "label": "conforms",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "geo",
+      "target": "fact",
+      "label": "conforms",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "time",
+      "target": "fact",
+      "label": "conforms",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "org",
+      "target": "fact",
+      "label": "conforms",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "fact",
+      "target": "metric",
+      "label": "computes",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "metric",
+      "target": "org",
+      "label": "owned by role (line of sight)",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "coverage",
+      "target": "call",
+      "label": "schedules calls",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "assortment",
+      "target": "call",
+      "label": "deploys via cycle instructions",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "assortment",
+      "target": "outlet",
+      "label": "sets SAT per outlet",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "tci",
+      "target": "coverage",
+      "label": "adds incentive workload",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "rep",
+      "target": "call",
+      "label": "executes",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "rep",
+      "target": "geo",
+      "label": "covers territory",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "call",
+      "target": "audit",
+      "label": "captures",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "call",
+      "target": "soq",
+      "label": "generates",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "soq",
+      "target": "orders",
+      "label": "becomes sales order",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "distributor",
+      "target": "outlet",
+      "label": "supplies (multi-layer)",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "distributor",
+      "target": "fact",
+      "label": "reports sell-out (DSR)",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "audit",
+      "target": "metric",
+      "label": "derives OOS · WD · facing share",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "audit",
+      "target": "tci",
+      "label": "measures PfP/PfC compliance",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "tci",
+      "target": "g2n",
+      "label": "funds front & back margin",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "tci",
+      "target": "outlet",
+      "label": "enrols in CIS",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "assortment",
+      "target": "forecast",
+      "label": "feeds S&OP demand review",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "distributor",
+      "target": "debtor",
+      "label": "carries receivables",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "accountplan",
+      "target": "promotion",
+      "label": "parents",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "accountplan",
+      "target": "outlet",
+      "label": "keyed on planning account",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "promotion",
+      "target": "deal",
+      "label": "auto-creates",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "deal",
+      "target": "fund",
+      "label": "spends against",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "lift",
+      "target": "promotion",
+      "label": "sets uplift %",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "pricelist",
+      "target": "promotion",
+      "label": "constrains range & dead-net floor",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "deduction",
+      "target": "deal",
+      "label": "resolves against (accrual↔actual)",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "claim",
+      "target": "deal",
+      "label": "settles (credit memo)",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "fund",
+      "target": "pnl",
+      "label": "accrues into",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "promotion",
+      "target": "g2n",
+      "label": "populates trade lines",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "promotion",
+      "target": "lift",
+      "label": "post-event analysis (learning loop)",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "promotion",
+      "target": "forecast",
+      "label": "promo uplift input",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "deduction",
+      "target": "profitability",
+      "label": "restates to performance period",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "source",
+      "target": "cdp",
+      "label": "identity resolution",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "cdp",
+      "target": "consumer",
+      "label": "unifies profile",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "consumer",
+      "target": "segment",
+      "label": "clustered into",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "segment",
+      "target": "campaign",
+      "label": "targets",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "campaign",
+      "target": "media",
+      "label": "delivers via",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "campaign",
+      "target": "metric",
+      "label": "TG-vs-CG ROI",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "media",
+      "target": "pnl",
+      "label": "marketing spend line",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "segment",
+      "target": "npd",
+      "label": "white space feeds",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "research",
+      "target": "segment",
+      "label": "hypothesis input",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "research",
+      "target": "campaign",
+      "label": "evaluates",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "campaign",
+      "target": "consumer",
+      "label": "responses enrich",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "forecast",
+      "target": "sandop",
+      "label": "consensus input",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "sandop",
+      "target": "supplyplan",
+      "label": "constrains (RCCP)",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "supplyplan",
+      "target": "prodorder",
+      "label": "schedules production",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "supplyplan",
+      "target": "inventory",
+      "label": "plans stock (MEIO)",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "inventory",
+      "target": "network",
+      "label": "positioned across echelons",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "network",
+      "target": "orders",
+      "label": "ships via lanes",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "orders",
+      "target": "outlet",
+      "label": "delivers (OTIF)",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "supplier",
+      "target": "orders",
+      "label": "fulfils POs",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "supplier",
+      "target": "pnl",
+      "label": "PPV & savings bridge",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "inventory",
+      "target": "pnl",
+      "label": "DIO → working capital",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "orders",
+      "target": "fact",
+      "label": "fill-rate / OTIF facts",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "orders",
+      "target": "debtor",
+      "label": "invoices age into",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "prodorder",
+      "target": "plant",
+      "label": "runs on line",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "plant",
+      "target": "quality",
+      "label": "losses & maintenance",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "prodorder",
+      "target": "pnl",
+      "label": "DMC + variances",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "quality",
+      "target": "metric",
+      "label": "OEE · PPM · RFT · DART",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "product",
+      "target": "prodorder",
+      "label": "BOM / materials",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "npd",
+      "target": "gate",
+      "label": "passes gates",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "gate",
+      "target": "sandop",
+      "label": "rides S&OP cycle",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "npd",
+      "target": "launch",
+      "label": "sell-in & launch",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "launch",
+      "target": "assortment",
+      "label": "distribution build (missile)",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "npd",
+      "target": "product",
+      "label": "creates SKUs",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "npd",
+      "target": "forecast",
+      "label": "NPI curves",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "g2n",
+      "target": "pnl",
+      "label": "instantiated as RLI tree",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "pnl",
+      "target": "version",
+      "label": "versioned (actual/plan/PPR/LE)",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "profitability",
+      "target": "outlet",
+      "label": "customer × SKU P&L",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "profitability",
+      "target": "g2n",
+      "label": "reallocates waterfall",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "debtor",
+      "target": "pnl",
+      "label": "DSO → C2C",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "coe",
+      "target": "version",
+      "label": "governs planning",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "web",
+      "target": "outlet",
+      "label": "eB2B ordering",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "web",
+      "target": "soq",
+      "label": "platform order twin",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "d2c",
+      "target": "consumer",
+      "label": "converts to consumer",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "d2c",
+      "target": "campaign",
+      "label": "nurtured by",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "benchmark",
+      "target": "pnl",
+      "label": "targets & peers",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "costing",
+      "target": "profitability",
+      "label": "allocates (ABC / std costing)",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "costing",
+      "target": "pnl",
+      "label": "variance & idle-capacity lines",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "plant",
+      "target": "costing",
+      "label": "capacity supply & demand",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "treasury",
+      "target": "debtor",
+      "label": "owns DSO program",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "treasury",
+      "target": "inventory",
+      "label": "DIO lever",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "treasury",
+      "target": "supplier",
+      "label": "DPO · supply-chain finance",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "treasury",
+      "target": "pnl",
+      "label": "C2C & capital charge",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "riskctrl",
+      "target": "orders",
+      "label": "3-way match · SOD · DOA",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "riskctrl",
+      "target": "supplier",
+      "label": "vendor-master controls",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "riskctrl",
+      "target": "pnl",
+      "label": "impairment & provisions",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "riskctrl",
+      "target": "metric",
+      "label": "KRIs & P2P KPIs",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "version",
+      "target": "valuation",
+      "label": "forecasts feed DCF",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "valuation",
+      "target": "benchmark",
+      "label": "target multiples",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "valuation",
+      "target": "pnl",
+      "label": "values the statements",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "epmplat",
+      "target": "version",
+      "label": "implements planning",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "epmplat",
+      "target": "pnl",
+      "label": "consolidation & close",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "epmplat",
+      "target": "profitability",
+      "label": "profitability engines",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "epmplat",
+      "target": "source",
+      "label": "member of landscape",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "source",
+      "target": "fact",
+      "label": "feeds",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "hier",
+      "target": "product",
+      "label": "governs roll-ups",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "hier",
+      "target": "outlet",
+      "label": "governs roll-ups",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "hier",
+      "target": "geo",
+      "label": "governs roll-ups",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": true
+    },
+    {
+      "source": "dq",
+      "target": "source",
+      "label": "profiles & masters",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "dq",
+      "target": "hier",
+      "label": "maintains mappings",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "usecase",
+      "target": "metric",
+      "label": "targets KPIs",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    },
+    {
+      "source": "usecase",
+      "target": "fact",
+      "label": "consumes facts",
+      "origin_graph": "fmcg-graph",
+      "cross_domain": false
+    }
+  ],
+  "domain_nodes": [
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "rep",
+      "role": "core"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "distributor",
+      "role": "core"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "tci",
+      "role": "core"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "assortment",
+      "role": "core"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "coverage",
+      "role": "core"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "soq",
+      "role": "core"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "audit",
+      "role": "core"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "call",
+      "role": "core"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "product",
+      "role": "shared"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "outlet",
+      "role": "shared"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "geo",
+      "role": "shared"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "time",
+      "role": "shared"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "org",
+      "role": "shared"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "debtor",
+      "role": "neighbour"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "fact",
+      "role": "neighbour"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "forecast",
+      "role": "neighbour"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "g2n",
+      "role": "neighbour"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "launch",
+      "role": "neighbour"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "metric",
+      "role": "neighbour"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "orders",
+      "role": "neighbour"
+    },
+    {
+      "domain": "sales-distribution-rtm",
+      "node": "web",
+      "role": "neighbour"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "claim",
+      "role": "core"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "deduction",
+      "role": "core"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "lift",
+      "role": "core"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "fund",
+      "role": "core"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "accountplan",
+      "role": "core"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "deal",
+      "role": "core"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "g2n",
+      "role": "core"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "pricelist",
+      "role": "core"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "promotion",
+      "role": "core"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "product",
+      "role": "shared"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "outlet",
+      "role": "shared"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "geo",
+      "role": "shared"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "time",
+      "role": "shared"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "org",
+      "role": "shared"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "forecast",
+      "role": "neighbour"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "pnl",
+      "role": "neighbour"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "profitability",
+      "role": "neighbour"
+    },
+    {
+      "domain": "trade-promotions-rgm",
+      "node": "tci",
+      "role": "neighbour"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "research",
+      "role": "core"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "consumer",
+      "role": "core"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "cdp",
+      "role": "core"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "segment",
+      "role": "core"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "campaign",
+      "role": "core"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "media",
+      "role": "core"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "product",
+      "role": "shared"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "outlet",
+      "role": "shared"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "geo",
+      "role": "shared"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "time",
+      "role": "shared"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "org",
+      "role": "shared"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "d2c",
+      "role": "neighbour"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "metric",
+      "role": "neighbour"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "npd",
+      "role": "neighbour"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "pnl",
+      "role": "neighbour"
+    },
+    {
+      "domain": "marketing-consumer",
+      "node": "source",
+      "role": "neighbour"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "inventory",
+      "role": "core"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "sandop",
+      "role": "core"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "orders",
+      "role": "core"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "supplyplan",
+      "role": "core"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "supplier",
+      "role": "core"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "network",
+      "role": "core"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "forecast",
+      "role": "core"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "product",
+      "role": "shared"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "outlet",
+      "role": "shared"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "geo",
+      "role": "shared"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "time",
+      "role": "shared"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "org",
+      "role": "shared"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "assortment",
+      "role": "neighbour"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "debtor",
+      "role": "neighbour"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "fact",
+      "role": "neighbour"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "gate",
+      "role": "neighbour"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "npd",
+      "role": "neighbour"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "pnl",
+      "role": "neighbour"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "prodorder",
+      "role": "neighbour"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "promotion",
+      "role": "neighbour"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "riskctrl",
+      "role": "neighbour"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "soq",
+      "role": "neighbour"
+    },
+    {
+      "domain": "supply-chain-procurement",
+      "node": "treasury",
+      "role": "neighbour"
+    },
+    {
+      "domain": "manufacturing-quality",
+      "node": "plant",
+      "role": "core"
+    },
+    {
+      "domain": "manufacturing-quality",
+      "node": "prodorder",
+      "role": "core"
+    },
+    {
+      "domain": "manufacturing-quality",
+      "node": "quality",
+      "role": "core"
+    },
+    {
+      "domain": "manufacturing-quality",
+      "node": "product",
+      "role": "shared"
+    },
+    {
+      "domain": "manufacturing-quality",
+      "node": "outlet",
+      "role": "shared"
+    },
+    {
+      "domain": "manufacturing-quality",
+      "node": "geo",
+      "role": "shared"
+    },
+    {
+      "domain": "manufacturing-quality",
+      "node": "time",
+      "role": "shared"
+    },
+    {
+      "domain": "manufacturing-quality",
+      "node": "org",
+      "role": "shared"
+    },
+    {
+      "domain": "manufacturing-quality",
+      "node": "costing",
+      "role": "neighbour"
+    },
+    {
+      "domain": "manufacturing-quality",
+      "node": "metric",
+      "role": "neighbour"
+    },
+    {
+      "domain": "manufacturing-quality",
+      "node": "pnl",
+      "role": "neighbour"
+    },
+    {
+      "domain": "manufacturing-quality",
+      "node": "supplyplan",
+      "role": "neighbour"
+    },
+    {
+      "domain": "innovation-npd",
+      "node": "npd",
+      "role": "core"
+    },
+    {
+      "domain": "innovation-npd",
+      "node": "launch",
+      "role": "core"
+    },
+    {
+      "domain": "innovation-npd",
+      "node": "gate",
+      "role": "core"
+    },
+    {
+      "domain": "innovation-npd",
+      "node": "product",
+      "role": "shared"
+    },
+    {
+      "domain": "innovation-npd",
+      "node": "outlet",
+      "role": "shared"
+    },
+    {
+      "domain": "innovation-npd",
+      "node": "geo",
+      "role": "shared"
+    },
+    {
+      "domain": "innovation-npd",
+      "node": "time",
+      "role": "shared"
+    },
+    {
+      "domain": "innovation-npd",
+      "node": "org",
+      "role": "shared"
+    },
+    {
+      "domain": "innovation-npd",
+      "node": "assortment",
+      "role": "neighbour"
+    },
+    {
+      "domain": "innovation-npd",
+      "node": "forecast",
+      "role": "neighbour"
+    },
+    {
+      "domain": "innovation-npd",
+      "node": "sandop",
+      "role": "neighbour"
+    },
+    {
+      "domain": "innovation-npd",
+      "node": "segment",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "pnl",
+      "role": "core"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "coe",
+      "role": "core"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "version",
+      "role": "core"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "epmplat",
+      "role": "core"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "profitability",
+      "role": "core"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "riskctrl",
+      "role": "core"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "valuation",
+      "role": "core"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "costing",
+      "role": "core"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "treasury",
+      "role": "core"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "debtor",
+      "role": "core"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "product",
+      "role": "shared"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "outlet",
+      "role": "shared"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "geo",
+      "role": "shared"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "time",
+      "role": "shared"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "org",
+      "role": "shared"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "benchmark",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "deduction",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "distributor",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "fund",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "g2n",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "inventory",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "media",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "metric",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "orders",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "plant",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "prodorder",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "source",
+      "role": "neighbour"
+    },
+    {
+      "domain": "finance-epm",
+      "node": "supplier",
+      "role": "neighbour"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "benchmark",
+      "role": "core"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "web",
+      "role": "core"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "d2c",
+      "role": "core"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "product",
+      "role": "shared"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "outlet",
+      "role": "shared"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "geo",
+      "role": "shared"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "time",
+      "role": "shared"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "org",
+      "role": "shared"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "campaign",
+      "role": "neighbour"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "consumer",
+      "role": "neighbour"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "pnl",
+      "role": "neighbour"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "soq",
+      "role": "neighbour"
+    },
+    {
+      "domain": "ecommerce-d2c-strategy",
+      "node": "valuation",
+      "role": "neighbour"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "metric",
+      "role": "core"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "fact",
+      "role": "core"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "dq",
+      "role": "core"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "source",
+      "role": "core"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "hier",
+      "role": "core"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "usecase",
+      "role": "core"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "product",
+      "role": "shared"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "outlet",
+      "role": "shared"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "geo",
+      "role": "shared"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "time",
+      "role": "shared"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "org",
+      "role": "shared"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "audit",
+      "role": "neighbour"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "campaign",
+      "role": "neighbour"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "cdp",
+      "role": "neighbour"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "distributor",
+      "role": "neighbour"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "epmplat",
+      "role": "neighbour"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "orders",
+      "role": "neighbour"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "quality",
+      "role": "neighbour"
+    },
+    {
+      "domain": "data-analytics-foundation",
+      "node": "riskctrl",
+      "role": "neighbour"
+    }
+  ],
+  "flows": [
+    {
+      "key": "master-spine",
+      "title": "Master spine",
+      "narrative": "5 dimensions ──conform──▶ FactSubject ──computes──▶ MetricDefinition ──owned-by──▶ role dashboards",
+      "sort_order": 1,
+      "steps": [
+        "product",
+        "outlet",
+        "geo",
+        "time",
+        "org",
+        "fact",
+        "metric"
+      ]
+    },
+    {
+      "key": "rtm-execution-loop",
+      "title": "RtM execution loop",
+      "narrative": "TCP/SAO/CIP ──▶ CallVisit ──▶ RetailAudit + SuggestedOrder ──▶ SalesOrder ──▶ Outlet; Distributor ──▶ sell-out; SAO ──▶ S&OP demand",
+      "sort_order": 2,
+      "steps": [
+        "coverage",
+        "assortment",
+        "tci",
+        "rep",
+        "call",
+        "audit",
+        "soq",
+        "orders",
+        "distributor",
+        "fact",
+        "forecast"
+      ]
+    },
+    {
+      "key": "trade-closed-loop",
+      "title": "Trade closed loop",
+      "narrative": "AccountPlan ──▶ Promotion ──▶ Deal ──▶ Fund; short-pay ──▶ Deduction/Claim ──settle──▶ Deal; post-event ──learn──▶ LiftModel ──▶ next plan",
+      "sort_order": 3,
+      "steps": [
+        "accountplan",
+        "promotion",
+        "deal",
+        "fund",
+        "deduction",
+        "claim",
+        "pricelist",
+        "lift",
+        "g2n"
+      ]
+    },
+    {
+      "key": "consumer-engagement-loop",
+      "title": "Consumer engagement loop",
+      "narrative": "Sources ──identity-resolve──▶ CDP ──▶ Consumer ──▶ Segment/Persona ──▶ Campaign ──▶ Touchpoints; white space ──▶ NPD",
+      "sort_order": 4,
+      "steps": [
+        "source",
+        "cdp",
+        "consumer",
+        "segment",
+        "campaign",
+        "media",
+        "research",
+        "npd"
+      ]
+    },
+    {
+      "key": "plan-make-move-loop",
+      "title": "Plan-make-move loop",
+      "narrative": "Forecast ──▶ S&OP ──▶ SupplyPlan/RCCP ──▶ ProductionOrder on Plant; MEIO stock across Network ──▶ Shipments (OTIF)",
+      "sort_order": 5,
+      "steps": [
+        "forecast",
+        "sandop",
+        "supplyplan",
+        "prodorder",
+        "plant",
+        "quality",
+        "inventory",
+        "network",
+        "orders",
+        "supplier"
+      ]
+    },
+    {
+      "key": "npd-lifecycle",
+      "title": "NPD lifecycle",
+      "narrative": "White space ──▶ NPDProject ──gates ride──▶ S&OP ──▶ LaunchRecord ──▶ distribution build ──▶ new SKU demand",
+      "sort_order": 6,
+      "steps": [
+        "segment",
+        "npd",
+        "gate",
+        "sandop",
+        "launch",
+        "assortment",
+        "product",
+        "forecast"
+      ]
+    },
+    {
+      "key": "money-loop-finance-hub",
+      "title": "Money loop (finance hub)",
+      "narrative": "Trade + marketing + COGS ──populate──▶ G2N ──▶ RLI tree ──versioned──▶ PPR/LE; customer×SKU P&L; C2C = DSO + DIO − DPO",
+      "sort_order": 7,
+      "steps": [
+        "g2n",
+        "pnl",
+        "version",
+        "profitability",
+        "debtor",
+        "coe",
+        "tci",
+        "fund",
+        "media",
+        "prodorder",
+        "inventory"
+      ]
+    },
+    {
+      "key": "finance-deep-loop-v1-1",
+      "title": "Finance deep loop (v1.1)",
+      "narrative": "Costing ──allocates──▶ Profitability ──▶ P&L; Treasury manages DSO/DIO/DPO ──▶ C2C; Controls gate P2P; Forecasts ──▶ DCF/EP ──▶ target multiples; EPM platform implements it all",
+      "sort_order": 8,
+      "steps": [
+        "costing",
+        "profitability",
+        "pnl",
+        "plant",
+        "treasury",
+        "debtor",
+        "inventory",
+        "supplier",
+        "riskctrl",
+        "orders",
+        "version",
+        "valuation",
+        "benchmark",
+        "epmplat",
+        "coe"
+      ]
+    }
+  ],
+  "source_files": [
+    "FMCG ONTOLOGY.md v1.0",
+    "FMCG Ontology Graph.html"
+  ]
+}
