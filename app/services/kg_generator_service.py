@@ -180,6 +180,28 @@ class KGGeneratorService:
                         "origin_graph": "llm_generated"
                     })
 
+        # Zero-Orphan Safety Net: Ensure EVERY generated node in ANY domain is connected
+        connected_keys = set()
+        for e in edges:
+            connected_keys.add(e["source"])
+            connected_keys.add(e["target"])
+
+        primary_anchor = nodes[0]["key"] if nodes else None
+        for n in nodes:
+            k = n["key"]
+            if k not in connected_keys and primary_anchor and k != primary_anchor:
+                lbl = "governs" if "org" in primary_anchor else "relates to"
+                edges.append({
+                    "source": primary_anchor,
+                    "target": k,
+                    "label": lbl,
+                    "origin": "user",
+                    "change_state": "unchanged",
+                    "cross_domain": False,
+                    "origin_graph": "llm_generated"
+                })
+                connected_keys.add(k)
+
         return {
             "domain": {
                 "slug": domain.get("slug", "finance"),

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>03 Marketing & Consumer — Knowledge Graph</title>
+  <script type="text/javascript" src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 50%, #FFFFFF 0%, #F1F5F9 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #0F172A;
+      user-select: none;
+    }
+    #network-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    /* Top Toolbar */
+    .toolbar {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 12px;
+      padding: 6px;
+      z-index: 20;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+    .tool-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #475569;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .tool-btn:hover {
+      background: rgba(241, 245, 249, 0.95);
+      color: #0F172A;
+      border-color: #CBD5E1;
+    }
+    .tool-btn.active {
+      background: rgba(59, 130, 246, 0.12);
+      color: #2563EB;
+      border-color: rgba(59, 130, 246, 0.35);
+    }
+    /* Floating Domain Badge */
+    .domain-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 12px;
+      padding: 8px 14px;
+      z-index: 20;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+    .domain-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #C05A9E;
+      box-shadow: 0 0 8px #C05A9E;
+    }
+    .domain-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #0F172A;
+    }
+    .domain-stats {
+      font-size: 11px;
+      color: #64748B;
+      margin-left: 4px;
+    }
+    /* Legend */
+    .legend {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: 60%;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 12px;
+      padding: 8px 12px;
+      z-index: 20;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #334155;
+      font-weight: 500;
+    }
+    .legend-color {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    /* Node Info Overlay */
+    .inspector {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      width: 320px;
+      max-height: 280px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      border-radius: 14px;
+      padding: 14px;
+      z-index: 20;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      transition: opacity 0.2s ease;
+    }
+    .inspector.open {
+      display: flex;
+    }
+    .inspector-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid #E2E8F0;
+      padding-bottom: 8px;
+    }
+    .inspector-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0F172A;
+    }
+    .inspector-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #DBEAFE;
+    }
+    .inspector-close {
+      background: transparent;
+      border: none;
+      color: #94A3B8;
+      font-size: 16px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .inspector-close:hover {
+      color: #0F172A;
+    }
+    .inspector-def {
+      font-size: 11px;
+      line-height: 1.5;
+      color: #475569;
+    }
+    .inspector-section {
+      margin-top: 4px;
+    }
+    .inspector-subtitle {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748B;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .tag {
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 10px;
+      color: #334155;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .formula-tag {
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-size: 10px;
+      color: #065F46;
+      font-family: 'JetBrains Mono', monospace;
+      width: 100%;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="network-container"></div>
+
+  <!-- Inspector Card -->
+  <div class="inspector" id="inspector">
+    <div class="inspector-header">
+      <div>
+        <div class="inspector-title" id="insp-name">Entity</div>
+        <div class="inspector-badge" id="insp-group">Group</div>
+      </div>
+      <button class="inspector-close" id="insp-close">&times;</button>
+    </div>
+    <div class="inspector-def" id="insp-def"></div>
+    <div class="inspector-section" id="insp-attrs-section">
+      <div class="inspector-subtitle">Attributes</div>
+      <div class="tag-container" id="insp-attrs"></div>
+    </div>
+    <div class="inspector-section" id="insp-formulas-section">
+      <div class="inspector-subtitle">Key Calculation Formulas</div>
+      <div id="insp-formulas"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    const rawNodes = [{"key": "campaign", "name": "Campaign", "ref_name": "Campaign", "group_key": "marketing", "group_name": "03 Marketing & Consumer", "color": "#C05A9E", "kind": "domain", "role": "core", "definition": "Hierarchy Marketing Plan \u2192 Program \u2192 Stage \u2192 Campaign \u2192 Wave \u2192 Offer \u2192 Communication \u2192 Response; measured TG-vs-CG with incremental response/spend, cost and ROI; contact-fatigue rules.", "attributes": ["objective", "targetGroup/controlGroup/referenceGroup", "channel", "sourceCode", "wave", "offer", "incrementalResponse", "incrementalSpend", "campaignCost", "campaignRoi", "contactFatigueRules"], "formulas": [], "evidence": "Shopper Insights user guide \u00b7 CVM metrics workbook", "notes": null, "origin": "reference", "change_state": "unchanged", "added_in_version": 0}, {"key": "cdp", "name": "CDPProfile / IdentityKey", "ref_name": "CDPProfile / IdentityKey", "group_key": "marketing", "group_name": "03 Marketing & Consumer", "color": "#C05A9E", "kind": "domain", "role": "core", "definition": "Identity resolution: hard keys (phone, email), private keys (cookie, device), soft keys (name, address, IP), unmatched pool re-matched later; pipeline sources \u2192 match \u2192 unified store \u2192 segmentation \u2192 activation/syndication. CDP \u2260 DMP \u2260 CRM distinctions evidenced.", "attributes": ["hardKeys", "privateKeys", "softKeys", "unmatchedPool", "unifiedProfileStore", "activationSyndication (DMP/DSP/CRM)"], "formulas": [], "evidence": "Indian FMCG major CDP Technical Solution Design (AWS) \u00b7 CDP assessment framework \u00b7 a web-personalization CDP data model", "notes": null, "origin": "reference", "change_state": "unchanged", "added_in_version": 0}, {"key": "consumer", "name": "Consumer / LoyaltyMember", "ref_name": "Consumer / LoyaltyMember", "group_key": "marketing", "group_name": "03 Marketing & Consumer", "color": "#C05A9E", "kind": "domain", "role": "core", "definition": "The end consumer with identity, demographics, contactability, tier and points; scored with engagement, share of wallet, churn propensity, NPS, LTV; ~68-column physical schema evidenced.", "attributes": ["customerId", "loyaltyId", "demographics", "contactabilityFlags", "tier", "pointsBalance", "registrationChannel", "engagementScore", "shareOfWallet", "churnPropensity", "nps", "ltv", "rfmProfile"], "formulas": [], "evidence": "Shopperinsight customer attributes \u00b7 CVM Data Dictionary \u00b7 persona decks", "notes": null, "origin": "reference", "change_state": "unchanged", "added_in_version": 0}, {"key": "geo", "name": "GeographyNode / Territory", "ref_name": "GeographyNode / Territory", "group_key": "spine", "group_name": "Master-data spine", "color": "#5A8AC3", "kind": "spine", "role": "shared", "definition": "Commercial geography \u2014 each field-force type may carry its own territory hierarchy over the same outlets. Chain: Outlet \u2192 Route/Beat \u2192 Territory \u2192 Area \u2192 Region \u2192 End Market \u2192 Cluster \u2192 Global Region; supply variant Sales Area \u2194 Depot with lead-time maps.", "attributes": ["nodeId", "level", "parentId", "ffType", "urbanRuralFlag", "salesArea", "depot", "leadTimeMap"], "formulas": [], "evidence": "TMD KPIs dimension sheets \u00b7 trade-transformation master-data spec \u00b7 tobacco major's driver-management forecasting model workshop", "notes": null, "origin": "reference", "change_state": "unchanged", "added_in_version": 0}, {"key": "media", "name": "Touchpoint / MediaSpend", "ref_name": "Touchpoint / MediaSpend", "group_key": "marketing", "group_name": "03 Marketing & Consumer", "color": "#C05A9E", "kind": "domain", "role": "core", "definition": "Channel taxonomy (paid/owned/earned \u00d7 ATL/BTL/TTL \u00d7 digital \u00d7 physical) and the Nielsen-style spend record: market \u2192 advertiser \u2192 category \u2192 product \u2192 media \u2192 network \u2192 outlet \u00d7 period, with companion TRP data.", "attributes": ["channelClass (paid/owned/earned)", "atlBtlTtl", "mediaType", "network", "outlet (title/station)", "spend", "trp"], "formulas": [], "evidence": "oral-care major media-spend & TRP samples \u00b7 Traditional ATL/BTL deck \u00b7 MPM KPI catalogue", "notes": null, "origin": "reference", "change_state": "unchanged", "added_in_version": 0}, {"key": "org", "name": "OrganizationNode", "ref_name": "OrganizationNode", "group_key": "spine", "group_name": "Master-data spine", "color": "#5A8AC3", "kind": "spine", "role": "shared", "definition": "Company \u2192 division/BU \u2192 function \u2192 cost/profit center \u2192 role \u2192 employee. Roles are first-class: KPI dictionaries assign each metric an owning role dashboard with RAG thresholds (line of sight). Distribution hierarchy includes Regional Distribution Cost Centers, Distributor Profit Centers, and Retailer-Level Sales Centers.", "attributes": ["nodeId", "nodeType", "parentId", "roleName", "kpiOwnership[]", "ragThresholds", "costCenter", "profitCenter", "marketingDepartment[]", "regionalSalesZone[]", "advertisingCostCenter[]", "tradeMarketingCostCenter[]", "productProfitCenter[]", "distributionHierarchy[]", "marketingRoi", "customerAcquisitionCost", "campaignConversionRate", "regionalSalesGrowth", "advertisingSpend", "distributorProfitMargin", "retailerSalesPerformance"], "formulas": [], "evidence": "tobacco major Outlet Dashboard specs \u00b7 HPC major dashboard landscapes \u00b7 bakery group SCM org charts", "notes": "Updated to include distribution hierarchy cost/profit centers.", "origin": "reference", "change_state": "unchanged", "added_in_version": 0}, {"key": "outlet", "name": "CustomerOutlet", "ref_name": "CustomerOutlet", "group_key": "spine", "group_name": "Master-data spine", "color": "#5A8AC3", "kind": "spine", "role": "shared", "definition": "The demand-side counterparty at every level. Layer model: Outlet \u2192 Delivery Point \u2192 Legal Customer \u2192 Retail Account \u2192 Supplier (multi-layer). Finance ladder: Class of Trade \u2192 Parent \u2192 Planning Account \u2192 Sold-to \u2192 Ship-to.", "attributes": ["customerCode", "tradeChannelCode (~40 codes)", "outletType/subType", "ownershipType (COCO/DODO/INDEP)", "volumeClass (1\u20139)", "shopperChannel", "creditPeriod/creditLimit", "geoCoordinates", "weightOfOutlet", "oosRate", "facingShare", "suggestedAssortment", "creditScore", "churnPropensity", "footfall", "planningAccount", "soldTo/shipTo"], "formulas": [], "evidence": "beverage bottler Outlet Data Solution \u00b7 tobacco major Data Dictionary \u00b7 HPC major Customer Profitability reference \u00b7 the TPM program account model", "notes": null, "origin": "reference", "change_state": "unchanged", "added_in_version": 0}, {"key": "product", "name": "Product / SKU", "ref_name": "Product / SKU", "group_key": "spine", "group_name": "Master-data spine", "color": "#5A8AC3", "kind": "spine", "role": "shared", "definition": "The sellable item and its roll-ups. Two evidenced hierarchy patterns: tobacco (Category\u2192Brand Family\u2192Variant\u2192Product\u2192Trade SKU\u2192Factory SKU) and household (Brand\u2192Price Band\u2192Sub-brand\u2192Form\u2192Size\u2192Flavor; TPM roll-up Division\u2192Category\u2192Brand\u2192MPG\u2192GTIN/UPC).", "attributes": ["skuId", "ean/upc/gtin", "packType", "packSize", "uomConversions", "priceSegment", "isVolumeDriveProduct", "isSellable/isReturnable", "skuStatus", "newProductFlag", "statCaseFactor", "abcCode", "materialClass (ZFIN/ZSEM/ZRAW/ZPAC)", "bomId", "mpg", "brandFamily/brandVariant"], "formulas": [], "evidence": "tobacco major Data Dictionary V4.0 \u00b7 trade-transformation master-data spec v1.0 \u00b7 HPC major group data warehouse Master Data List \u00b7 TPM-program requirements", "notes": null, "origin": "reference", "change_state": "unchanged", "added_in_version": 0}, {"key": "research", "name": "MarketResearch / SocialSignal", "ref_name": "MarketResearch / SocialSignal", "group_key": "marketing", "group_name": "03 Marketing & Consumer", "color": "#C05A9E", "kind": "domain", "role": "core", "definition": "MR study objects (U&A, concept test, conjoint/MaxDiff/TURF, NPS, brand equity) across the product lifecycle; social listening signals (mentions, sentiment, influencers, crisis alerts) as command-center consumables.", "attributes": ["studyType", "mode (online/phone/F2F)", "lifecycleStage", "panelSource (Nielsen/IRI/Kantar)", "mentions", "sentiment", "influencers[]", "crisisAlerts"], "formulas": [], "evidence": "Market Research Overview \u00b7 a social-listening platform \u00b7 Rapid Insight hypothesis library", "notes": null, "origin": "reference", "change_state": "unchanged", "added_in_version": 0}, {"key": "segment", "name": "Segment / Persona", "ref_name": "Segment / Persona", "group_key": "marketing", "group_name": "03 Marketing & Consumer", "color": "#C05A9E", "kind": "domain", "role": "core", "definition": "Segment: typed (value/behaviour/attitude) with parameters, centroids and archived assignments. Persona: narrative instance on micro-segments with propensity-score matching, evolution stages and functional/emotional needs; white-space method exposes underserved segments.", "attributes": ["segmentId", "segmentType", "parameters", "centroid", "archivedAssignments[]", "referencePersona", "propensityScoreMatch", "evolutionStage", "functionalNeed", "emotionalNeed"], "formulas": [], "evidence": "CVM data model \u00b7 Persona Development Approach \u00b7 a vaping product line lifecycle \u00b7 brewer beer personas", "notes": null, "origin": "reference", "change_state": "unchanged", "added_in_version": 0}, {"key": "time", "name": "TimePeriod", "ref_name": "TimePeriod", "group_key": "spine", "group_name": "Master-data spine", "color": "#5A8AC3", "kind": "spine", "role": "shared", "definition": "Dual calendar/fiscal date spine plus the FMCG-specific cycle/campaign grain. Conventions: MTD/QTD/YTD/CTD + prior-period comparatives; performance period vs posting period; as-is vs as-was reporting.", "attributes": ["calendarDate", "fiscalPeriod", "adjustmentPeriod (P13)", "cycle/campaign", "performancePeriod", "postingPeriod", "asWasFlag"], "formulas": [], "evidence": "Indian FMCG major MT date dimension \u00b7 tobacco major CC DATE_DIM \u00b7 HPC major customer-profitability reference \u00b7 CPG Template principles", "notes": null, "origin": "reference", "change_state": "unchanged", "added_in_version": 0}, {"key": "client-regionaldistributioncostcenter", "name": "RegionalDistributionCostCenter", "ref_name": null, "group_key": "client", "group_name": "Client-specific entities", "color": "#E08A1E", "kind": "entity", "role": "client", "definition": "Cost center responsible for managing regional distribution expenses, logistics cost allocations, and zone reporting.", "attributes": ["regionId", "costCenter", "allocatedLogisticsCost", "freightVariance", "budgetVariance"], "formulas": ["Logistics Cost Per Unit = Total Regional Logistics Expenses / Total Units Distributed"], "evidence": null, "notes": "Connected to OrganizationNode and DistributorProfitCenter.", "origin": "user", "change_state": "added", "added_in_version": 2}, {"key": "client-distributorprofitcenter", "name": "DistributorProfitCenter", "ref_name": null, "group_key": "client", "group_name": "Client-specific entities", "color": "#E08A1E", "kind": "entity", "role": "client", "definition": "Profit center responsible for tracking margins, trade terms, and sell-through sales performance of distributors.", "attributes": ["distributorId", "profitCenter", "distributorMarginPct", "primarySales", "secondarySales"], "formulas": ["Distributor Margin % = ((Secondary Sales Value - Primary Sales Cost) / Secondary Sales Value) * 100"], "evidence": null, "notes": "Supplies RetailerSalesCenter in the distribution chain.", "origin": "user", "change_state": "added", "added_in_version": 2}, {"key": "client-retailersalescenter", "name": "RetailerSalesCenter", "ref_name": null, "group_key": "client", "group_name": "Client-specific entities", "color": "#E08A1E", "kind": "entity", "role": "client", "definition": "Sales center responsible for tracking retailer-level sales performance, outlet fulfillment, and channel profitability.", "attributes": ["retailerId", "salesCenter", "tradeChannel", "outletRevenue", "complianceRate"], "formulas": ["Outlet Fulfillment Rate = (Orders Delivered On-Time / Total Orders Placed) * 100"], "evidence": null, "notes": "Links to physical CustomerOutlet accounts.", "origin": "user", "change_state": "added", "added_in_version": 2}, {"key": "client-marketingkpi", "name": "MarketingKPI", "ref_name": null, "group_key": "client", "group_name": "Client-specific entities", "color": "#10B981", "kind": "entity", "role": "client", "definition": "Entity representing marketing key performance indicators, tracking targets, actual values, reporting periods, and calculation formulas. Connected to Campaign for outcome measurement and OrganizationNode for performance governance.", "attributes": ["kpiId", "kpiName", "metricName", "targetValue", "actualValue", "variance", "reportingPeriod", "calculationFormula", "ownerRole", "marketingRoi", "customerAcquisitionCost", "campaignConversionRate", "regionalSalesGrowth", "advertisingSpend", "distributorProfitMargin", "retailerSalesPerformance"], "formulas": ["Marketing ROI = (Incremental Gross Profit - Marketing Cost) / Marketing Cost", "Customer Acquisition Cost (CAC) = Total Marketing Spend / New Customers Acquired", "Campaign Conversion Rate = (Number of Conversions / Total Campaign Visitors) * 100", "Regional Sales Growth = ((Current Period Regional Sales - Prior Period Regional Sales) / Prior Period Regional Sales) * 100"], "evidence": null, "notes": "Connected to Campaign (measured by) and OrganizationNode (reports to).", "origin": "user", "change_state": "added", "added_in_version": 4}];
+    const rawEdges = [{"source": "cdp", "target": "consumer", "label": "unifies profile", "origin": "reference", "change_state": "unchanged", "added_in_version": 0, "cross_domain": false}, {"source": "consumer", "target": "segment", "label": "clustered into", "origin": "reference", "change_state": "unchanged", "added_in_version": 0, "cross_domain": false}, {"source": "segment", "target": "campaign", "label": "targets", "origin": "reference", "change_state": "unchanged", "added_in_version": 0, "cross_domain": false}, {"source": "campaign", "target": "media", "label": "delivers via", "origin": "reference", "change_state": "unchanged", "added_in_version": 0, "cross_domain": false}, {"source": "research", "target": "segment", "label": "hypothesis input", "origin": "reference", "change_state": "unchanged", "added_in_version": 0, "cross_domain": false}, {"source": "research", "target": "campaign", "label": "evaluates", "origin": "reference", "change_state": "unchanged", "added_in_version": 0, "cross_domain": false}, {"source": "campaign", "target": "consumer", "label": "responses enrich", "origin": "reference", "change_state": "unchanged", "added_in_version": 0, "cross_domain": false}, {"source": "org", "target": "client-regionaldistributioncostcenter", "label": "allocates cost to", "origin": "user", "change_state": "added", "added_in_version": 2, "cross_domain": false}, {"source": "client-regionaldistributioncostcenter", "target": "client-distributorprofitcenter", "label": "distributes through", "origin": "user", "change_state": "added", "added_in_version": 2, "cross_domain": false}, {"source": "client-distributorprofitcenter", "target": "client-retailersalescenter", "label": "supplies", "origin": "user", "change_state": "added", "added_in_version": 2, "cross_domain": false}, {"source": "client-retailersalescenter", "target": "outlet", "label": "sells through", "origin": "user", "change_state": "added", "added_in_version": 2, "cross_domain": false}, {"source": "campaign", "target": "client-marketingkpi", "label": "measured by", "origin": "user", "change_state": "added", "added_in_version": 4, "cross_domain": false}, {"source": "client-marketingkpi", "target": "org", "label": "reports to", "origin": "user", "change_state": "added", "added_in_version": 4, "cross_domain": false}];
+
+    // Build Legend (if element exists)
+    const legendEl = document.getElementById('legend');
+    if (legendEl) {
+      const groupMap = new Map();
+      rawNodes.forEach(n => {
+        if (n.group_name && !groupMap.has(n.group_name)) {
+          groupMap.set(n.group_name, n.color || '#C05A9E');
+        }
+      });
+      groupMap.forEach((color, name) => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = `<span class="legend-color" style="background:${color};box-shadow:0 0 6px ${color}"></span><span>${name}</span>`;
+        legendEl.appendChild(item);
+      });
+    }
+
+    // Transform Nodes for Vis.js (White / Light Theme)
+    const visNodes = rawNodes.map(n => {
+      const nodeColor = n.color || '#C05A9E';
+      return {
+        id: n.key,
+        label: n.name,
+        group: n.group_name,
+        color: {
+          background: '#FFFFFF',
+          border: nodeColor,
+          highlight: {
+            background: '#F0F9FF',
+            border: nodeColor
+          },
+          hover: {
+            background: '#F8FAFC',
+            border: nodeColor
+          }
+        },
+        font: {
+          color: '#0F172A',
+          size: 13,
+          face: 'Inter, sans-serif',
+          bold: true
+        },
+        shape: 'box',
+        margin: 12,
+        borderWidth: 2,
+        borderWidthSelected: 3,
+        shadow: {
+          enabled: true,
+          color: 'rgba(0, 0, 0, 0.08)',
+          size: 8,
+          x: 1,
+          y: 3
+        },
+        raw: n
+      };
+    });
+
+    // Transform Edges for Vis.js (White / Light Theme)
+    const visEdges = rawEdges.map((e, idx) => {
+      return {
+        id: 'e_' + idx,
+        from: e.source,
+        to: e.target,
+        label: e.label || '',
+        arrows: {
+          to: {
+            enabled: true,
+            scaleFactor: 0.8
+          }
+        },
+        color: {
+          color: '#94A3B8',
+          highlight: '#2563EB',
+          hover: '#64748B'
+        },
+        font: {
+          color: '#475569',
+          size: 11,
+          face: 'Inter, sans-serif',
+          align: 'middle',
+          background: 'rgba(255, 255, 255, 0.95)'
+        },
+        smooth: {
+          type: 'curvedCW',
+          roundness: 0.2
+        },
+        length: 220
+      };
+    });
+
+    const container = document.getElementById('network-container');
+    const nodesDataset = new vis.DataSet(visNodes);
+    const edgesDataset = new vis.DataSet(visEdges);
+
+    const data = {
+      nodes: nodesDataset,
+      edges: edgesDataset
+    };
+
+    const options = {
+      physics: {
+        enabled: true,
+        solver: 'forceAtlas2Based',
+        forceAtlas2Based: {
+          gravitationalConstant: -50,
+          centralGravity: 0.01,
+          springLength: 160,
+          springConstant: 0.08,
+          damping: 0.4
+        },
+        stabilization: {
+          iterations: 160,
+          updateInterval: 25
+        }
+      },
+      interaction: {
+        hover: true,
+        tooltipDelay: 150,
+        selectable: true,
+        multiselect: false,
+        navigationButtons: false,
+        zoomView: true,
+        dragView: true
+      }
+    };
+
+    const network = new vis.Network(container, data, options);
+
+    // Inspector elements
+    const inspector = document.getElementById('inspector');
+    const inspName = document.getElementById('insp-name');
+    const inspGroup = document.getElementById('insp-group');
+    const inspDef = document.getElementById('insp-def');
+    const inspAttrs = document.getElementById('insp-attrs');
+    const inspAttrsSection = document.getElementById('insp-attrs-section');
+    const inspFormulas = document.getElementById('insp-formulas');
+    const inspFormulasSection = document.getElementById('insp-formulas-section');
+    const inspClose = document.getElementById('insp-close');
+
+    function showDetails(nodeRaw) {
+      if (!nodeRaw) {
+        inspector.classList.remove('open');
+        return;
+      }
+      inspName.textContent = nodeRaw.name || nodeRaw.key;
+      inspGroup.textContent = nodeRaw.group_name || '03 Marketing & Consumer';
+      inspDef.textContent = nodeRaw.definition || 'No definition available.';
+
+      const attrs = nodeRaw.attributes || [];
+      if (attrs.length > 0) {
+        inspAttrsSection.style.display = 'block';
+        inspAttrs.innerHTML = attrs.map(a => `<span class="tag">${typeof a === 'string' ? a : (a.name || a.key)}</span>`).join('');
+      } else {
+        inspAttrsSection.style.display = 'none';
+      }
+
+      const formulas = nodeRaw.formulas || [];
+      if (formulas.length > 0) {
+        inspFormulasSection.style.display = 'block';
+        inspFormulas.innerHTML = formulas.map(f => `<div class="formula-tag">${typeof f === 'string' ? f : (f.name || f.expression)}</div>`).join('');
+      } else {
+        inspFormulasSection.style.display = 'none';
+      }
+
+      inspector.classList.add('open');
+    }
+
+    inspClose.onclick = () => {
+      inspector.classList.remove('open');
+      network.unselectAll();
+      try {
+        window.parent.postMessage({ type: 'NODE_DESELECTED' }, '*');
+      } catch(e) {}
+    };
+
+    // Network Selection Events
+    network.on('selectNode', function(params) {
+      if (params.nodes && params.nodes.length > 0) {
+        const nodeId = params.nodes[0];
+        const vNode = nodesDataset.get(nodeId);
+        if (vNode && vNode.raw) {
+          showDetails(vNode.raw);
+          try {
+            window.parent.postMessage({
+              type: 'NODE_SELECTED',
+              key: nodeId,
+              name: vNode.label,
+              node: vNode.raw
+            }, '*');
+          } catch(e) {}
+        }
+      }
+    });
+
+    network.on('deselectNode', function(params) {
+      if (!params.nodes || params.nodes.length === 0) {
+        inspector.classList.remove('open');
+        try {
+          window.parent.postMessage({ type: 'NODE_DESELECTED' }, '*');
+        } catch(e) {}
+      }
+    });
+
+    // Toolbar handlers (if present)
+    const fitBtn = document.getElementById('btn-fit');
+    if (fitBtn) {
+      fitBtn.onclick = () => {
+        network.fit({ animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
+      };
+    }
+
+    const zoomInBtn = document.getElementById('btn-zoom-in');
+    if (zoomInBtn) {
+      zoomInBtn.onclick = () => {
+        const scale = network.getScale() * 1.3;
+        network.moveTo({ scale: scale, animation: { duration: 300 } });
+      };
+    }
+
+    const zoomOutBtn = document.getElementById('btn-zoom-out');
+    if (zoomOutBtn) {
+      zoomOutBtn.onclick = () => {
+        const scale = network.getScale() * 0.7;
+        network.moveTo({ scale: scale, animation: { duration: 300 } });
+      };
+    }
+
+    let physicsEnabled = true;
+    const physicsBtn = document.getElementById('btn-physics');
+    if (physicsBtn) {
+      physicsBtn.onclick = () => {
+        physicsEnabled = !physicsEnabled;
+        network.setOptions({ physics: { enabled: physicsEnabled } });
+        physicsBtn.classList.toggle('active', physicsEnabled);
+      };
+    }
+
+    // Settle physics after initial stabilization
+    network.once('stabilizationIterationsDone', function() {
+      network.fit({ animation: { duration: 500 } });
+      // Gently turn off continuous physics to save CPU
+      setTimeout(() => {
+        network.setOptions({ physics: { enabled: false } });
+        if (physicsBtn) physicsBtn.classList.remove('active');
+        physicsEnabled = false;
+      }, 1200);
+    });
+
+    // Listen to messages from React Parent
+    window.addEventListener('message', function(event) {
+      const data = event.data;
+      if (!data) return;
+
+      if (data.type === 'SELECT_NODE' && data.key) {
+        network.selectNodes([data.key]);
+        network.focus(data.key, { scale: 1.15, animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
+        const vNode = nodesDataset.get(data.key);
+        if (vNode && vNode.raw) {
+          showDetails(vNode.raw);
+        }
+      } else if (data.type === 'DESELECT_NODE') {
+        network.unselectAll();
+        inspector.classList.remove('open');
+      } else if (data.type === 'FIT_GRAPH') {
+        network.fit({ animation: { duration: 600 } });
+      }
+    });
+
+    // Notify parent window that graph is ready
+    window.parent.postMessage({ type: 'GRAPH_READY', slug: 'marketing-consumer' }, '*');
+  </script>
+</body>
+</html>

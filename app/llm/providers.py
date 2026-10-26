@@ -59,32 +59,53 @@ class OllamaProvider(LLMProvider):
     """Direct Ollama provider with native JSON mode and parameter support."""
     name = "ollama"
 
-    def __init__(self, model, timeout, base_url=None):
+    def __init__(self, model, timeout, base_url=None, fallback_url=None):
         self.model = model
         self.timeout = int(timeout) if timeout else 180
         url = (base_url or "http://localhost:11434").rstrip("/")
         if not url.endswith("/api/chat"):
             url = f"{url}/api/chat"
         self.url = url
+        fb = (fallback_url or os.environ.get("LLM_FALLBACK_URL", "")).rstrip("/")
+        if fb and not fb.endswith("/api/chat"):
+            fb = f"{fb}/api/chat"
+        self.fallback_url = fb if fb and fb != self.url else None
+
+    def _post(self, payload):
+        urls = [self.url]
+        if self.fallback_url and self.fallback_url not in urls:
+            urls.append(self.fallback_url)
+        
+        last_exc = None
+        for u in urls:
+            try:
+                # If primary is remote and fallback exists, cap primary attempt so it quickly falls back
+                cur_timeout = min(max(15, int(self.timeout * 0.25)), 35) if (len(urls) > 1 and u == urls[0]) else self.timeout
+                r = requests.post(u, timeout=cur_timeout, json=payload)
+                if r.status_code == 200:
+                    return r.json()
+                last_exc = LLMError(f"LLM returned HTTP {r.status_code} from {u}.")
+            except Exception as e:
+                last_exc = LLMError(f"LLM request to {u} failed: {e}")
+                continue
+        if last_exc:
+            raise last_exc
+        raise LLMError("LLM request failed across all endpoints.")
 
     def complete(self, system, user, max_tokens=1500):
         messages = []
         if system:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": user})
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "stream": False,
+            "options": {"num_predict": max_tokens, "temperature": 0.2}
+        }
+        data = self._post(payload)
         try:
-            r = requests.post(self.url, timeout=self.timeout, json={
-                "model": self.model,
-                "messages": messages,
-                "stream": False,
-                "options": {"num_predict": max_tokens, "temperature": 0.2}
-            })
-        except requests.RequestException as e:
-            raise LLMError(f"LLM request failed: {e}")
-        if r.status_code != 200:
-            raise LLMError(f"LLM returned HTTP {r.status_code}.")
-        try:
-            return r.json().get("message", {}).get("content", "") or ""
+            return data.get("message", {}).get("content", "") or ""
         except (KeyError, ValueError, TypeError):
             raise LLMError("Unexpected LLM response shape.")
 
@@ -93,24 +114,21 @@ class OllamaProvider(LLMProvider):
         if system:
             messages.append({"role": "system", "content": system + "\n\nRespond ONLY with a valid JSON object matching the requested schema."})
         messages.append({"role": "user", "content": user})
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "stream": False,
+            "format": "json",
+            "options": {"num_predict": max_tokens, "temperature": 0.2}
+        }
+        data = self._post(payload)
         try:
-            r = requests.post(self.url, timeout=self.timeout, json={
-                "model": self.model,
-                "messages": messages,
-                "stream": False,
-                "format": "json",
-                "options": {"num_predict": max_tokens, "temperature": 0.2}
-            })
-        except requests.RequestException as e:
-            raise LLMError(f"LLM request failed: {e}")
-        if r.status_code != 200:
-            raise LLMError(f"LLM returned HTTP {r.status_code}.")
-        try:
-            content = r.json().get("message", {}).get("content", "") or ""
+            content = data.get("message", {}).get("content", "") or ""
         except (KeyError, ValueError, TypeError):
             raise LLMError("Unexpected LLM response shape.")
         from .base import parse_json_object
         return parse_json_object(content)
+
 
 
 def build_provider(cfg):
@@ -119,13 +137,14 @@ def build_provider(cfg):
     if p in ("", "none"):
         return None
     if p == "ollama":
-        return OllamaProvider(cfg.LLM_MODEL, cfg.LLM_TIMEOUT_SECONDS, cfg.LLM_BASE_URL)
+        return OllamaProvider(cfg.LLM_MODEL, cfg.LLM_TIMEOUT_SECONDS, cfg.LLM_BASE_URL, getattr(cfg, "LLM_FALLBACK_URL", None))
     if p == "anthropic":
         return AnthropicProvider(cfg.LLM_API_KEY, cfg.LLM_MODEL, cfg.LLM_TIMEOUT_SECONDS, cfg.LLM_BASE_URL or None) if cfg.LLM_API_KEY else None
     if p == "openai":
         return OpenAIProvider(cfg.LLM_API_KEY, cfg.LLM_MODEL, cfg.LLM_TIMEOUT_SECONDS, cfg.LLM_BASE_URL or None) if cfg.LLM_API_KEY else None
     if p == "openai_compatible":
         if cfg.LLM_BASE_URL and "/api/chat" in cfg.LLM_BASE_URL:
-            return OllamaProvider(cfg.LLM_MODEL, cfg.LLM_TIMEOUT_SECONDS, cfg.LLM_BASE_URL)
+            return OllamaProvider(cfg.LLM_MODEL, cfg.LLM_TIMEOUT_SECONDS, cfg.LLM_BASE_URL, getattr(cfg, "LLM_FALLBACK_URL", None))
         return OpenAIProvider(cfg.LLM_API_KEY, cfg.LLM_MODEL, cfg.LLM_TIMEOUT_SECONDS, cfg.LLM_BASE_URL) if cfg.LLM_BASE_URL else None
+
     return None

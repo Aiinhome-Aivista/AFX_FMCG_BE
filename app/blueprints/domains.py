@@ -43,12 +43,12 @@ def overview_graph():
     """Returns the complete dynamic finance ontology overview graph from ArangoDB / database."""
     ref = ReferenceService()
     res = ref.overview_graph()
-    base_url = "http://127.0.0.1:5000"
-    overview_url = f"{base_url}/api/graphs/fmcg-overview.html"
+    base_url = request.host_url.rstrip("/") if request else ""
+    overview_url = f"{base_url}/api/graphs/fmcg-overview.html" if base_url else "/api/graphs/fmcg-overview.html"
     for d in res.get("domains", []):
         slug = d.get("slug")
         if slug:
-            d["graph_url"] = f"{base_url}/api/graphs/{slug}.html"
+            d["graph_url"] = f"{base_url}/api/graphs/{slug}.html" if base_url else f"/api/graphs/{slug}.html"
     progress = {}
     if g.user_id:
         try:

@@ -31,6 +31,7 @@ class Config:
     LLM_MODEL: str = ""
     LLM_API_KEY: str = ""
     LLM_BASE_URL: str = ""
+    LLM_FALLBACK_URL: str = ""
     LLM_TIMEOUT_SECONDS: int = 180
     TESTING: bool = False
 
@@ -54,6 +55,7 @@ class Config:
             PROCESSING_MODE=e.get("PROCESSING_MODE", "async"),
             LLM_PROVIDER=e.get("LLM_PROVIDER", "none").lower(), LLM_MODEL=e.get("LLM_MODEL", ""),
             LLM_API_KEY=e.get("LLM_API_KEY", ""), LLM_BASE_URL=e.get("LLM_BASE_URL", ""),
+            LLM_FALLBACK_URL=e.get("LLM_FALLBACK_URL", "http://localhost:11434/api/chat"),
             LLM_TIMEOUT_SECONDS=int(e.get("LLM_TIMEOUT_SECONDS", 180)),
         )
         for k, v in overrides.items():
