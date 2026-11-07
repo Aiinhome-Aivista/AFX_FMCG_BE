@@ -550,6 +550,7 @@ class ChatService:
 
         action = (action or "").strip().lower()
         last_id = self.convs.messages(conv["id"])[-1]["id"] if self.convs.messages(conv["id"]) else 0
+        updated_graph_data = None
 
         with self.db.transaction():
             if action == "continue":
@@ -571,12 +572,38 @@ class ChatService:
                 self.convs.add_message(
                     conv["id"],
                     "assistant",
-                    f"Domain Discovery Complete! Based on our dialogue, your Knowledge Graph for “{domain['name']}” has been tailored with your business nuances ({answered_count} question{'s' if answered_count != 1 else ''} explored). You can now review the proposed graph changes.",
+                    f"Domain Discovery Complete! Based on our dialogue, your initial Knowledge Graph 1 (KG1) for “{domain['name']}” has been generated and tailored with your business nuances ({answered_count} question{'s' if answered_count != 1 else ''} explored). You can now proceed to upload telemetry data.",
                     "system",
                     {"plan_complete": True}
                 )
 
-        return self.snapshot(user_id, wf, self.convs.get(user_id, wf["id"]), new_from_id=last_id)
+                # Ensure initial graph version KG1 exists upon completing questionnaire
+                latest = self.graphs.latest(user_id, wf["id"])
+                if not latest or latest.get("version_number", 0) == 0:
+                    try:
+                        summary = f"KG1 initial graph generated from questionnaire completion ({answered_count} questions explored)"
+                        new_version = self.graphs.create_version(
+                            user_id, wf, domain, [], "customization", None, summary, "user"
+                        )
+                        number, state = self.graphs.working(user_id, wf, domain)
+                        updated_graph_data = self.graphs.graph(user_id, wf, domain, new_version)
+                        try:
+                            from flask import current_app
+                            from .html_graph_service import HTMLGraphService
+                            graph_dir = current_app.config["APP_CONFIG"].GRAPH_DIR
+                            html_url = HTMLGraphService.save_html(domain["slug"], domain, updated_graph_data.get("nodes", []), updated_graph_data.get("edges", []), output_dir=graph_dir)
+                            updated_graph_data["html_url"] = html_url
+                        except Exception:
+                            pass
+                    except Exception as e:
+                        print(f"[KG1-GEN] Notice: {e}")
+                elif latest:
+                    try:
+                        updated_graph_data = self.graphs.graph(user_id, wf, domain, latest.get("version_number", 1))
+                    except Exception:
+                        pass
+
+        return self.snapshot(user_id, wf, self.convs.get(user_id, wf["id"]), new_from_id=last_id, updated_graph=updated_graph_data)
 
     def _analyze(self, domain, state, q, text):
         """Analyze client answer with LLM to extract graph nodes, attributes, and relationships with duplicate prevention."""

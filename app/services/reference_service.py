@@ -412,6 +412,7 @@ class ReferenceService:
                 "key": f["flow_key"],
                 "title": f["title"],
                 "narrative": dynamic_narrative,
+                "canonical_narrative": f.get("narrative") or dynamic_narrative,
                 "step_count": len(augmented_keys),
                 "customized": has_customized_step,
                 "relevant": is_domain_flow,

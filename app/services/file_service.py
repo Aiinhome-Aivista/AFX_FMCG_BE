@@ -42,7 +42,7 @@ class FileService:
 
     # ------------------------------------------------------------------ upload
     def upload(self, user_id, domain, storage):
-        wf = self.wfs.require_completed(user_id, domain, 5, "Uploads are only allowed after you finalise the ontology (step 5).")
+        wf = self.wfs.get_wf(user_id, domain, required=True)
         if not storage or not storage.filename:
             raise ValidationError("No file was provided.")
         original = secure_filename(storage.filename) or "upload"
@@ -73,8 +73,34 @@ class FileService:
         except Exception:
             path.unlink(missing_ok=True)
             raise
-        fid = self.files.create(user_id, wf["id"], domain["id"], wf["finalized_version_number"], original, stored, ext, size, h.hexdigest())
+
+        target_version = wf.get("finalized_version_number")
+        if not target_version:
+            latest_ver = self.db.one(
+                "SELECT version_number FROM graph_versions WHERE user_id=%s AND workflow_id=%s ORDER BY version_number DESC LIMIT 1",
+                (user_id, wf["id"])
+            )
+            target_version = latest_ver["version_number"] if latest_ver else 1
+
+        fid = self.files.create(user_id, wf["id"], domain["id"], target_version, original, stored, ext, size, h.hexdigest())
         self.files.create_job(fid, user_id)
+
+        # Interactive witty bot progress update in chat
+        try:
+            from ..repositories.conversations import ConversationRepository
+            convs = ConversationRepository(self.db)
+            conv = convs.get(user_id, wf["id"])
+            if conv:
+                convs.add_message(
+                    conv["id"],
+                    "assistant",
+                    f"Let me read your data and do a deep dive into “{original}”... I don't even have a coffee break, but analyzing this data is pure dopamine!",
+                    "system",
+                    {"file_name": original, "status": "processing"}
+                )
+        except Exception:
+            pass
+
         if self.cfg.PROCESSING_MODE == "sync":
             process_file(self.db, self.cfg, fid)
         else:
@@ -129,11 +155,29 @@ def process_file(db, cfg, file_id):
         # map against the exact finalised graph version this file was uploaded for
         wf = WorkflowRow(db, f["workflow_id"])
         gs = GraphService(db)
-        state = gs.state_of(f["user_id"], wf.row, wf.domain, f["graph_version_number"])
+        target_v = f["graph_version_number"] or wf.row.get("finalized_version_number") or 1
+        state = gs.state_of(f["user_id"], wf.row, wf.domain, target_v)
         refs = ReferenceRepository(db).nodes_by_keys([k for k, n in state.nodes.items() if n["origin"] == "reference"])
         mapping = map_terms(state, parsed["terms"], parsed["text"], {r["node_key"]: r["canon_attributes"] for r in refs})
         files.set_status(file_id, "processed", None, parsed["metadata"], parsed["preview"])
         files.update_job(job["id"], "succeeded", None, {"mapping": mapping})
+
+        # Add interactive bot message to the conversation with witty commentary
+        try:
+            from ..repositories.conversations import ConversationRepository
+            convs = ConversationRepository(db)
+            conv = convs.get(f["user_id"], wf.row["id"])
+            if conv:
+                matched_cnt = mapping.get("stats", {}).get("matched_terms", 0)
+                entities_cnt = mapping.get("stats", {}).get("entities_touched", 0)
+                comment = (
+                    f"✨ Deep dive complete on “{f['original_name']}”! "
+                    f"I mapped {matched_cnt} operational terms across {entities_cnt} entities in {wf.domain['name']}. "
+                    f"Ready to synthesize and perform Gap Analysis for KG2."
+                )
+                convs.add_message(conv["id"], "assistant", comment, "system", {"file_id": file_id, "file_name": f["original_name"]})
+        except Exception as ex:
+            log.warning("Could not add bot upload message: %s", ex)
     except FileRejected as e:
         files.set_status(file_id, "failed", str(e))
         files.update_job(job["id"], "failed", str(e))
