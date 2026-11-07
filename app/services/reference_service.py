@@ -317,24 +317,35 @@ class ReferenceService:
 
     # ------------------------------------------------------------------ user graph resolution for flows
     def _user_graph_map(self, user_id, slug=None):
-        if not user_id:
+        if not user_id or not slug:
             return {}, []
         try:
             import logging
-            from .workflow_service import WorkflowService
             from ..repositories.graphs import GraphRepository
-            d = self.domain(slug) if slug else None
-            wf = WorkflowService(self.db).get_wf(user_id, d, required=False) if d else None
+            from ..services.workflow_service import WorkflowService
+
+            try:
+                d = self.domain(slug)
+            except Exception:
+                d = self.repo.domain_by_slug(slug)
+            if not d:
+                return {}, []
+
+            wfs = WorkflowService(self.db)
+            wf = wfs.get_wf(user_id, d, required=False)
             if not wf:
-                wfs = self.db.query("SELECT * FROM workflows WHERE user_id=%s ORDER BY id DESC LIMIT 1", (user_id,))
-                wf = wfs[0] if wfs else None
-            if wf:
-                latest = GraphRepository(self.db).latest(user_id, wf["id"])
-                if latest:
-                    u_nodes = {n["key"]: n for n in GraphRepository(self.db).nodes(latest["id"])}
-                    u_edges = GraphRepository(self.db).edges(latest["id"])
-                    return u_nodes, u_edges
+                return {}, []
+
+            repo = GraphRepository(self.db)
+            latest = repo.latest(user_id, wf["id"])
+            if not latest:
+                return {}, []
+
+            u_nodes = {n["key"]: n for n in repo.nodes(latest["id"])}
+            u_edges = repo.edges(latest["id"])
+            return u_nodes, u_edges
         except Exception as e:
+            import logging
             logging.getLogger(__name__).warning("Could not load user graph for flows: %s", e)
         return {}, []
 
@@ -342,7 +353,10 @@ class ReferenceService:
     def flows(self, slug=None, user_id=None):
         roles = {}
         if slug:
-            roles = self.repo.domain_node_roles(self.domain(slug)["id"])
+            try:
+                roles = self.repo.domain_node_roles(self.domain(slug)["id"])
+            except Exception:
+                roles = {}
         user_nodes, user_edges = self._user_graph_map(user_id, slug)
 
         out = []
@@ -352,8 +366,11 @@ class ReferenceService:
             flow_keys_set = set(keys)
             augmented_keys = list(keys)
 
-            # Insert any newly added domain nodes that connect to this flow
-            if user_nodes and user_edges:
+            # A flow belongs to / is core to this domain if any of its steps are core
+            is_domain_flow = bool(slug) and any(roles.get(k) == "core" for k in keys)
+
+            # Insert newly added domain nodes that connect to this flow ONLY if this flow is part of this domain
+            if is_domain_flow and user_nodes and user_edges:
                 added_nodes = {k: n for k, n in user_nodes.items() if n.get("change_state") == "added"}
                 for ue in user_edges:
                     src, tgt = ue.get("source"), ue.get("target")
@@ -397,7 +414,7 @@ class ReferenceService:
                 "narrative": dynamic_narrative,
                 "step_count": len(augmented_keys),
                 "customized": has_customized_step,
-                "relevant": bool(slug) and any(roles.get(k) == "core" for k in augmented_keys),
+                "relevant": is_domain_flow,
                 "touches_domain": bool(slug) and any(k in roles for k in augmented_keys)
             })
         return out
@@ -406,13 +423,21 @@ class ReferenceService:
         f = self.repo.flow(key)
         if not f:
             raise NotFoundError("Unknown flow.")
+        roles = {}
+        if slug:
+            try:
+                roles = self.repo.domain_node_roles(self.domain(slug)["id"])
+            except Exception:
+                roles = {}
         user_nodes, user_edges = self._user_graph_map(user_id, slug)
         steps = self.repo.flow_steps(f["id"])
         keys = [s["node_key"] for s in steps]
         flow_keys_set = set(keys)
         augmented_steps = list(steps)
 
-        if user_nodes and user_edges:
+        is_domain_flow = bool(slug) and any(roles.get(k) == "core" for k in keys)
+
+        if is_domain_flow and user_nodes and user_edges:
             added_nodes = {k: n for k, n in user_nodes.items() if n.get("change_state") == "added"}
             for ue in user_edges:
                 src, tgt = ue.get("source"), ue.get("target")
