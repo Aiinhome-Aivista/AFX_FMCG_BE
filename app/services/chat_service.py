@@ -510,6 +510,11 @@ class ChatService:
             else:
                 ack = base_ack
 
+            qs_all = self.convs.questions(conv["id"])
+            answered_count = sum(1 for qx in qs_all if qx["status"] in ("answered", "skipped"))
+            if answered_count in (2, 3):
+                ack += f"\n\n💡 Core Nuances Captured: Initial operational baseline for “{domain['name']}” is established. You can now proceed to upload your business data/telemetry for KG2 Gap Analysis, or continue answering questions below."
+
             self.convs.add_message(conv["id"], "assistant", ack, "ack",
                                    {"question_id": q["id"], "ops": len(ops), "engine": "rule-based" if fallback else self.engine,
                                     **({"fallback_reason": fallback} if fallback and self.llm else {})})
