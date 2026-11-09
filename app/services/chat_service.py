@@ -503,7 +503,12 @@ class ChatService:
             if duplicate_edges:
                 change_details.append(f"⚠️ Existing Relationship Detected (Duplicate avoided): {', '.join(duplicate_edges)}")
 
-            if change_details:
+            if q.get("topic") == "telemetry_doubt" or q.get("node_key") == "telemetry_csv":
+                ack = (
+                    f"✅ Telemetry clarification saved! I have reconciled your explanation into the domain model.\n\n"
+                    f"Proceeding to KG2 Gap Analysis: Any newly introduced entities from your CSV data are now highlighted in RED on your Knowledge Graph."
+                )
+            elif change_details:
                 ack = base_ack + "\n\n" + "\n".join(change_details)
             elif ops:
                 ack = base_ack + f"\n\n• Knowledge graph updated ({len(ops)} change{'s' if len(ops) != 1 else ''} applied)."
@@ -512,15 +517,18 @@ class ChatService:
 
             qs_all = self.convs.questions(conv["id"])
             answered_count = sum(1 for qx in qs_all if qx["status"] in ("answered", "skipped"))
-            if answered_count in (2, 3):
+            if answered_count in (2, 3) and not (q.get("topic") == "telemetry_doubt" or q.get("node_key") == "telemetry_csv"):
                 ack += f"\n\n💡 Core Nuances Captured: Initial operational baseline for “{domain['name']}” is established. You can now proceed to upload your business data/telemetry for KG2 Gap Analysis, or continue answering questions below."
 
             self.convs.add_message(conv["id"], "assistant", ack, "ack",
                                    {"question_id": q["id"], "ops": len(ops), "engine": "rule-based" if fallback else self.engine,
+                                    "is_telemetry_clarification": bool(q.get("topic") == "telemetry_doubt" or q.get("node_key") == "telemetry_csv"),
                                     **({"fallback_reason": fallback} if fallback and self.llm else {})})
 
             asked = False
-            if analysis["followup"] and not q["is_followup"]:
+            if q.get("topic") == "telemetry_doubt" or q.get("node_key") == "telemetry_csv":
+                asked = True  # Telemetry doubt resolved, proceed directly to Gap Analysis
+            elif analysis["followup"] and not q["is_followup"]:
                 seq = max(x["seq"] for x in self.convs.questions(conv["id"])) + 1
                 fqid = self.convs.add_question(conv["id"], seq, q["node_key"], q["topic"], analysis["followup"], True)
                 self.convs.add_message(conv["id"], "assistant", analysis["followup"], "question",
