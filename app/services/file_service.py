@@ -85,7 +85,7 @@ class FileService:
         fid = self.files.create(user_id, wf["id"], domain["id"], target_version, original, stored, ext, size, h.hexdigest())
         self.files.create_job(fid, user_id)
 
-        # Interactive witty bot progress update in chat
+        # Progress update in chat
         try:
             from ..repositories.conversations import ConversationRepository
             convs = ConversationRepository(self.db)
@@ -94,7 +94,7 @@ class FileService:
                 convs.add_message(
                     conv["id"],
                     "assistant",
-                    f"Let me read your data and do a deep dive into “{original}”... I don't even have a coffee break, but analyzing this data is pure dopamine!",
+                    f"System Processing: Parsing “{original}”... Checking schemas and reconciling data with KG1 baseline.",
                     "system",
                     {"file_name": original, "status": "processing"}
                 )
@@ -162,20 +162,27 @@ def process_file(db, cfg, file_id):
         files.set_status(file_id, "processed", None, parsed["metadata"], parsed["preview"])
         files.update_job(job["id"], "succeeded", None, {"mapping": mapping})
 
-        # Add interactive bot message to the conversation with witty commentary
+        # Add system progress message to the conversation
         try:
             from ..repositories.conversations import ConversationRepository
             convs = ConversationRepository(db)
             conv = convs.get(f["user_id"], wf.row["id"])
             if conv:
+                try:
+                    db.execute(
+                        "UPDATE conversation_messages SET meta=JSON_SET(COALESCE(meta, '{}'), '$.status', 'completed') WHERE conversation_id=%s",
+                        (conv["id"],)
+                    )
+                except Exception:
+                    pass
                 matched_cnt = mapping.get("stats", {}).get("matched_terms", 0)
                 entities_cnt = mapping.get("stats", {}).get("entities_touched", 0)
                 comment = (
-                    f"✨ Deep dive complete on “{f['original_name']}”! "
-                    f"I mapped {matched_cnt} operational terms across {entities_cnt} entities in {wf.domain['name']}. "
-                    f"Ready to synthesize and perform Gap Analysis for KG2."
+                    f"System Processing Complete: Analysis finished for “{f['original_name']}”. "
+                    f"Mapped {matched_cnt} operational terms across {entities_cnt} entities in {wf.domain['name']}. "
+                    f"Ready for Gap Analysis."
                 )
-                convs.add_message(conv["id"], "assistant", comment, "system", {"file_id": file_id, "file_name": f["original_name"]})
+                convs.add_message(conv["id"], "assistant", comment, "system", {"file_id": file_id, "file_name": f["original_name"], "status": "completed"})
         except Exception as ex:
             log.warning("Could not add bot upload message: %s", ex)
     except FileRejected as e:
