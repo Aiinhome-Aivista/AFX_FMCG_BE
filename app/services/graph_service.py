@@ -74,6 +74,11 @@ class GraphService:
         sa, sb = self.state_of(user_id, wf, domain, a), self.state_of(user_id, wf, domain, b)
         d = diff_graphs(sa, sb)
         d["from"], d["to"] = {"number": a, "label": f"KG{a}"}, {"number": b, "label": f"KG{b}"}
+        try:
+            from .business_impact_service import generate_business_impact
+            d["business_impact"] = generate_business_impact(d, {"errors": [], "warnings": []}, domain)
+        except Exception:
+            d["business_impact"] = None
         return d
 
     # ------------------------------------------------------------------ create (atomic)
@@ -113,8 +118,14 @@ class GraphService:
             history.append({"id": p["id"], "title": p["title"], "source": p["source"], "status": p["status"], "created_at": p["created_at"],
                             "decided_at": p["decided_at"], "result_version": p["result_version_number"],
                             "items": [{"op": i["op"], "description": i["description"], "status": i["status"]} for i in self.proposals.items(p["id"])]})
+        comparison = diff_graphs(base, state)
+        try:
+            from .business_impact_service import generate_business_impact
+            business_impact = generate_business_impact(comparison, validation, domain)
+        except Exception:
+            business_impact = None
         return {"version": self.version_meta(latest), "graph": serialize_state(state), "validation": validation,
-                "comparison": diff_graphs(base, state), "versions": self.versions(user_id, wf), "history": history,
+                "comparison": comparison, "business_impact": business_impact, "versions": self.versions(user_id, wf), "history": history,
                 "finalized_version_number": wf["finalized_version_number"]}
 
     def finalize(self, user_id, wf, domain, confirm, acknowledge_warnings):
