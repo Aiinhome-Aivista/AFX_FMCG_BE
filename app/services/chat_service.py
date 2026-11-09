@@ -506,7 +506,7 @@ class ChatService:
             if q.get("topic") == "telemetry_doubt" or q.get("node_key") == "telemetry_csv":
                 ack = (
                     f"✅ Telemetry clarification saved! I have reconciled your explanation into the domain model.\n\n"
-                    f"Proceeding to KG2 Gap Analysis: Any newly introduced entities from your CSV data are now highlighted in RED on your Knowledge Graph."
+                    f"Proceeding to Data Gap Analysis: Any newly introduced entities from your CSV data are now highlighted in RED on your Knowledge Graph."
                 )
             elif change_details:
                 ack = base_ack + "\n\n" + "\n".join(change_details)
@@ -518,7 +518,7 @@ class ChatService:
             qs_all = self.convs.questions(conv["id"])
             answered_count = sum(1 for qx in qs_all if qx["status"] in ("answered", "skipped"))
             if answered_count in (2, 3) and not (q.get("topic") == "telemetry_doubt" or q.get("node_key") == "telemetry_csv"):
-                ack += f"\n\n💡 Core Nuances Captured: Initial operational baseline for “{domain['name']}” is established. You can now proceed to upload your business data/telemetry for KG2 Gap Analysis, or continue answering questions below."
+                ack += f"\n\n💡 Core Nuances Captured: Initial operational baseline for “{domain['name']}” is established. You can now proceed to upload your business data for Data Gap Analysis, or continue answering questions below."
 
             self.convs.add_message(conv["id"], "assistant", ack, "ack",
                                    {"question_id": q["id"], "ops": len(ops), "engine": "rule-based" if fallback else self.engine,
@@ -585,7 +585,7 @@ class ChatService:
                 self.convs.add_message(
                     conv["id"],
                     "assistant",
-                    f"Domain Discovery Complete! Based on our dialogue, your initial Knowledge Graph 1 (KG1) for “{domain['name']}” has been generated and tailored with your business nuances ({answered_count} question{'s' if answered_count != 1 else ''} explored). You can now proceed to upload telemetry data.",
+                    f"Domain Discovery Complete! Based on our dialogue, your operational baseline model for “{domain['name']}” has been generated and tailored with your business nuances ({answered_count} question{'s' if answered_count != 1 else ''} explored). You can now proceed to upload business data.",
                     "system",
                     {"plan_complete": True}
                 )
