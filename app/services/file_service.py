@@ -94,7 +94,7 @@ class FileService:
                 convs.add_message(
                     conv["id"],
                     "assistant",
-                    f"System Processing: Parsing “{original}”... Checking schemas and reconciling data with KG1 baseline.",
+                    f"Let me read your data and do a deep dive into “{original}”... I don't even have a coffee break, but analyzing this data is pure dopamine!",
                     "system",
                     {"file_name": original, "status": "processing"}
                 )
@@ -162,7 +162,7 @@ def process_file(db, cfg, file_id):
         files.set_status(file_id, "processed", None, parsed["metadata"], parsed["preview"])
         files.update_job(job["id"], "succeeded", None, {"mapping": mapping})
 
-        # Add system progress message to the conversation
+        # Add interactive bot message or clarifying doubt question to the conversation
         try:
             from ..repositories.conversations import ConversationRepository
             convs = ConversationRepository(db)
@@ -175,14 +175,51 @@ def process_file(db, cfg, file_id):
                     )
                 except Exception:
                     pass
+
+                unmatched = mapping.get("unmatched", []) or []
                 matched_cnt = mapping.get("stats", {}).get("matched_terms", 0)
                 entities_cnt = mapping.get("stats", {}).get("entities_touched", 0)
-                comment = (
-                    f"System Processing Complete: Analysis finished for “{f['original_name']}”. "
-                    f"Mapped {matched_cnt} operational terms across {entities_cnt} entities in {wf.domain['name']}. "
-                    f"Ready for Gap Analysis."
-                )
-                convs.add_message(conv["id"], "assistant", comment, "system", {"file_id": file_id, "file_name": f["original_name"], "status": "completed"})
+
+                # Requirement 1: If there are doubts/unmapped terms in the CSV, ask a clarifying question
+                if unmatched and len(unmatched) > 0:
+                    sample_unmatched = ", ".join(f"“{u}”" for u in unmatched[:3])
+                    doubt_question = (
+                        f"I analyzed your uploaded file “{f['original_name']}” and noticed {len(unmatched)} column(s) ({sample_unmatched}) "
+                        f"that don't directly map to your verified KG1 entities in {wf.domain['name']}. "
+                        f"Could you clarify how these operational fields are used, or should we introduce them as new telemetry nodes?"
+                    )
+                    qs = convs.questions(conv["id"])
+                    seq = (qs[-1]["seq"] if qs else 0) + 1
+                    qid = convs.add_question(conv["id"], seq, "telemetry_csv", "telemetry_doubt", doubt_question)
+                    convs.add_message(
+                        conv["id"],
+                        "assistant",
+                        doubt_question,
+                        "question",
+                        {
+                            "question_id": qid,
+                            "kind": "csv_doubt",
+                            "file_id": file_id,
+                            "file_name": f["original_name"],
+                            "unmatched_terms": unmatched[:10],
+                            "matched_count": matched_cnt,
+                            "status": "completed",
+                        }
+                    )
+                else:
+                    # Requirement 2: No doubts! Confirm clean mapping
+                    comment = (
+                        f"✨ Data reconciliation complete on “{f['original_name']}”! "
+                        f"I mapped {matched_cnt} operational terms across {entities_cnt} entities in {wf.domain['name']}. "
+                        f"No schema doubts detected. Ready to synthesize and perform Gap Analysis for KG2."
+                    )
+                    convs.add_message(
+                        conv["id"],
+                        "assistant",
+                        comment,
+                        "system",
+                        {"file_id": file_id, "file_name": f["original_name"], "status": "completed"}
+                    )
         except Exception as ex:
             log.warning("Could not add bot upload message: %s", ex)
     except FileRejected as e:

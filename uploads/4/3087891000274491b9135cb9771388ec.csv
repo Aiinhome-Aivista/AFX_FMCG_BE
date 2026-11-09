@@ -1,0 +1,13 @@
+invoice_id,invoice_date,distributor_id,distributor_name,distributor_tier,region,outlet_id,outlet_type,sku_id,sku_name,scheme_id,scheme_type,quantity_cases,free_cases,list_price_per_case,gross_value,trade_discount_pct,trade_discount_value,scheme_discount_value,volume_rebate_accrual,returns_value,net_sales,claim_status,claim_settlement_date
+INV-1001,2026-10-03,D001,Kolkata Traders,Gold,East,O1001,Kirana,SKU101,Biscuit 12x100g,SCH-FEST03,Off-Invoice 3%,50,0,480,24000,5,1200,720,480,0,21600,Settled,2026-10-28
+INV-1002,2026-10-03,D001,Kolkata Traders,Gold,East,O1002,Kirana,SKU102,Noodles 24x70g,,None,40,0,360,14400,5,720,0,288,0,13392,None,
+INV-1003,2026-10-05,D002,Siliguri Distributors,Gold,East,O2001,Supermarket,SKU101,Biscuit 12x100g,SCH-B10G1,Buy 10 Get 1 Free,110,10,480,52800,5,2640,4800,1056,480,43824,Settled,2026-10-30
+INV-1004,2026-10-06,D002,Siliguri Distributors,Gold,East,O2002,Kirana,SKU103,Soap 48x75g,SCH-FEST03,Off-Invoice 3%,30,0,600,18000,5,900,540,360,0,16200,Pending,
+INV-1005,2026-10-08,D003,Durgapur Agencies,Silver,East,O3001,Kirana,SKU102,Noodles 24x70g,,None,60,0,360,21600,3,648,0,432,360,20160,None,
+INV-1006,2026-10-09,D003,Durgapur Agencies,Silver,East,O3002,Wholesale,SKU101,Biscuit 12x100g,SCH-FEST03,Off-Invoice 3%,25,0,480,12000,3,360,360,240,0,11040,Settled,2026-10-29
+INV-1007,2026-10-11,D004,Howrah Distribution,Silver,East,O4001,Kirana,SKU103,Soap 48x75g,,None,20,0,600,12000,3,360,0,240,600,10800,None,
+INV-1008,2026-10-12,D004,Howrah Distribution,Silver,East,O4002,Chemist,SKU104,Shampoo 24x180ml,SCH-FEST03,Off-Invoice 3%,15,0,900,13500,3,405,405,270,0,12420,Pending,
+INV-1009,2026-10-15,D005,Asansol Enterprises,Gold,East,O5001,Supermarket,SKU104,Shampoo 24x180ml,SCH-B10G1,Buy 10 Get 1 Free,48,4,900,43200,5,2160,3600,864,900,35676,Settled,2026-11-02
+INV-1010,2026-10-16,D005,Asansol Enterprises,Gold,East,O5002,Wholesale,SKU101,Biscuit 12x100g,SCH-FEST03,Off-Invoice 3%,80,0,480,38400,5,1920,1152,768,0,34560,Settled,2026-11-02
+INV-1011,2026-10-20,D001,Kolkata Traders,Gold,East,O1003,Chemist,SKU104,Shampoo 24x180ml,,None,20,0,900,18000,5,900,0,360,1800,14940,None,
+INV-1012,2026-10-22,D002,Siliguri Distributors,Gold,East,O2003,Kirana,SKU102,Noodles 24x70g,,None,70,0,360,25200,5,1260,0,504,0,23436,None,
