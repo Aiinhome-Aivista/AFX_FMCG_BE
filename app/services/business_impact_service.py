@@ -350,3 +350,4 @@ def generate_business_impact(comparison: dict, validation: dict, domain: dict) -
         },
         "items": items,
     }
+
