@@ -77,7 +77,7 @@ class FileService:
         target_version = wf.get("finalized_version_number")
         if not target_version:
             latest_ver = self.db.one(
-                "SELECT version_number FROM graph_versions WHERE user_id=%s AND workflow_id=%s ORDER BY version_number DESC LIMIT 1",
+                "SELECT version_number FROM user_graph_versions WHERE user_id=%s AND workflow_id=%s ORDER BY version_number DESC LIMIT 1",
                 (user_id, wf["id"])
             )
             target_version = latest_ver["version_number"] if latest_ver else 1
