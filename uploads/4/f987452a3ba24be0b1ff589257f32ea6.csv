@@ -1,0 +1,13 @@
+consumer_id,loyalty_member_id,cdp_profile_id,identity_key_type,segment_id,segment_name,loyalty_tier,enrolment_date,region,preferred_channel,preferred_touchpoint,last_purchase_date,last_purchase_sku_id,lifetime_value,points_balance,last_exposed_campaign_id,consent_status
+CON-8001,LM-9001,CDP-7001,Mobile Hash,SEG-01,Young Urban Families,Gold,2025-03-12,East,Modern Trade,Instagram,2026-10-14,SKU101,18500,2400,CMP-6001,Opted-In
+CON-8002,LM-9002,CDP-7002,Email Hash,SEG-02,Students & Millennials,Silver,2025-08-20,East,E-Commerce,Instagram,2026-10-22,SKU102,6200,800,CMP-6003,Opted-In
+CON-8003,LM-9003,CDP-7003,Mobile Hash,SEG-03,Health-Conscious Women,Platinum,2024-11-05,North,Modern Trade,Influencer,2026-10-18,SKU103,31200,5100,CMP-6004,Opted-In
+CON-8004,LM-9004,CDP-7004,Email Hash,SEG-04,Value Seekers,Bronze,2026-01-15,West,General Trade,WhatsApp CRM,2026-10-25,SKU101,2100,300,CMP-6006,Opted-In
+CON-8005,LM-9005,CDP-7005,Mobile Hash,SEG-01,Young Urban Families,Silver,2025-06-30,East,Modern Trade,YouTube,2026-10-10,SKU101,9400,1200,CMP-6001,Opted-In
+CON-8006,LM-9006,CDP-7006,Device ID,SEG-02,Students & Millennials,Bronze,2026-04-02,West,E-Commerce,Instagram,2026-10-28,SKU102,3300,450,CMP-6007,Opted-In
+CON-8007,LM-9007,CDP-7007,Mobile Hash,SEG-03,Health-Conscious Women,Gold,2025-02-18,North,E-Commerce,Search,2026-10-12,SKU104,15800,2600,CMP-6005,Opted-In
+CON-8008,LM-9008,CDP-7008,Email Hash,SEG-03,Health-Conscious Women,Silver,2025-09-09,North,Modern Trade,Instagram,2026-10-30,SKU104,7700,950,CMP-6005,Opted-Out
+CON-8009,LM-9009,CDP-7009,Mobile Hash,SEG-04,Value Seekers,Bronze,2026-02-11,West,General Trade,WhatsApp CRM,2026-10-27,SKU101,1800,220,CMP-6006,Opted-In
+CON-8010,LM-9010,CDP-7010,Device ID,SEG-01,Young Urban Families,Gold,2024-12-01,East,Modern Trade,Instagram,2026-10-20,SKU101,22400,3300,CMP-6001,Opted-In
+CON-8011,LM-9011,CDP-7011,Email Hash,SEG-02,Students & Millennials,Silver,2025-10-10,West,E-Commerce,YouTube,2026-11-01,SKU102,5400,700,CMP-6007,Opted-In
+CON-8012,LM-9012,CDP-7012,Mobile Hash,SEG-03,Health-Conscious Women,Platinum,2024-08-14,North,Modern Trade,Influencer,2026-10-29,SKU103,28900,4700,CMP-6004,Opted-In

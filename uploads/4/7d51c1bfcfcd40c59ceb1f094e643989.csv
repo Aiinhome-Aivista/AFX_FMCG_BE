@@ -1,0 +1,17 @@
+assortment_id,outlet_type,region,sku_id,sku_name,listing_status,min_facings,effective_from,effective_to,planned_by
+AST-001,Kirana,East,SKU101,Biscuit 12x100g,Must-Stock,3,2026-10-01,2026-12-31,Regional Sales Head
+AST-002,Kirana,East,SKU102,Noodles 24x70g,Must-Stock,2,2026-10-01,2026-12-31,Regional Sales Head
+AST-003,Kirana,East,SKU103,Soap 48x75g,Recommended,2,2026-10-01,2026-12-31,Regional Sales Head
+AST-004,Kirana,East,SKU104,Shampoo 24x180ml,Optional,1,2026-10-01,2026-12-31,Regional Sales Head
+AST-005,Supermarket,East,SKU101,Biscuit 12x100g,Must-Stock,6,2026-10-01,2026-12-31,Regional Sales Head
+AST-006,Supermarket,East,SKU102,Noodles 24x70g,Must-Stock,5,2026-10-01,2026-12-31,Regional Sales Head
+AST-007,Supermarket,East,SKU103,Soap 48x75g,Must-Stock,4,2026-10-01,2026-12-31,Regional Sales Head
+AST-008,Supermarket,East,SKU104,Shampoo 24x180ml,Must-Stock,4,2026-10-01,2026-12-31,Regional Sales Head
+AST-009,Wholesale,East,SKU101,Biscuit 12x100g,Must-Stock,8,2026-10-01,2026-12-31,Regional Sales Head
+AST-010,Wholesale,East,SKU102,Noodles 24x70g,Must-Stock,6,2026-10-01,2026-12-31,Regional Sales Head
+AST-011,Wholesale,East,SKU103,Soap 48x75g,Recommended,4,2026-10-01,2026-12-31,Regional Sales Head
+AST-012,Wholesale,East,SKU104,Shampoo 24x180ml,Recommended,4,2026-10-01,2026-12-31,Regional Sales Head
+AST-013,Chemist,East,SKU101,Biscuit 12x100g,Optional,1,2026-10-01,2026-12-31,Regional Sales Head
+AST-014,Chemist,East,SKU102,Noodles 24x70g,Optional,1,2026-10-01,2026-12-31,Regional Sales Head
+AST-015,Chemist,East,SKU103,Soap 48x75g,Must-Stock,3,2026-10-01,2026-12-31,Regional Sales Head
+AST-016,Chemist,East,SKU104,Shampoo 24x180ml,Must-Stock,4,2026-10-01,2026-12-31,Regional Sales Head
