@@ -65,7 +65,7 @@ class GraphService:
     def graph(self, user_id, wf, domain, number):
         state = self.state_of(user_id, wf, domain, number)
         if number == 0:
-            meta = {"number": 0, "label": "KG0 (selected blocks)", "kind": "reference", "status": "reference", "readonly": True}
+            meta = {"number": 0, "label": "Baseline Model (selected blocks)", "kind": "reference", "status": "reference", "readonly": True}
         else:
             meta = self.version_meta(self.graphs.version(user_id, wf["id"], number))
         return serialize_state(state, meta, {"slug": domain["slug"], "name": domain["name"], "color": domain["color"]})
@@ -73,7 +73,8 @@ class GraphService:
     def compare(self, user_id, wf, domain, a, b):
         sa, sb = self.state_of(user_id, wf, domain, a), self.state_of(user_id, wf, domain, b)
         d = diff_graphs(sa, sb)
-        d["from"], d["to"] = {"number": a, "label": f"KG{a}"}, {"number": b, "label": f"KG{b}"}
+        d["from"] = {"number": a, "label": f"Version {a}" if a > 0 else "Baseline Model"}
+        d["to"] = {"number": b, "label": f"Version {b}"}
         try:
             from .business_impact_service import generate_business_impact
             d["business_impact"] = generate_business_impact(d, {"errors": [], "warnings": []}, domain)

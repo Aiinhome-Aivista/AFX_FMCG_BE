@@ -506,12 +506,12 @@ class ChatService:
             if q.get("topic") == "telemetry_doubt" or q.get("node_key") == "telemetry_csv":
                 ack = (
                     f"✅ Telemetry clarification saved! I have reconciled your explanation into the domain model.\n\n"
-                    f"Proceeding to Data Gap Analysis: Any newly introduced entities from your CSV data are now highlighted in RED on your Knowledge Graph."
+                    f"Proceeding to Data Gap Analysis: Any newly introduced entities from your CSV data are now highlighted in RED on your domain model."
                 )
             elif change_details:
                 ack = base_ack + "\n\n" + "\n".join(change_details)
             elif ops:
-                ack = base_ack + f"\n\n• Knowledge graph updated ({len(ops)} change{'s' if len(ops) != 1 else ''} applied)."
+                ack = base_ack + f"\n\n• Domain model updated ({len(ops)} change{'s' if len(ops) != 1 else ''} applied)."
             else:
                 ack = base_ack
 
@@ -594,7 +594,7 @@ class ChatService:
                 latest = self.graphs.latest(user_id, wf["id"])
                 if not latest or latest.get("version_number", 0) == 0:
                     try:
-                        summary = f"KG1 initial graph generated from questionnaire completion ({answered_count} questions explored)"
+                        summary = f"Initial baseline model generated from questionnaire completion ({answered_count} questions explored)"
                         new_version = self.graphs.create_version(
                             user_id, wf, domain, [], "customization", None, summary, "user"
                         )

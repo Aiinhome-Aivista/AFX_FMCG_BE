@@ -4,12 +4,12 @@ from ..repositories.users import UserRepository
 from ..repositories.workflows import WorkflowRepository
 
 STEP_TITLES = {
-    1: ("Industry sector", "Choose Finance"),
-    2: ("Domain", "Pick a specific Finance domain"),
-    3: ("Reference graph (KG0)", "Explore the domain template and choose the blocks that matter"),
-    4: ("Client nuances (KG1)", "Chatbot collects your specifics and business experience"),
-    5: ("Finalise ontology", "Review, compare and finalise your customised graph"),
-    6: ("Telemetry (KG2)", "Upload CSV / XLSX / PDF / TXT / DOCX / SQL and generate the data-mapped graph"),
+    1: ("Industry sector", "Choose FMCG or Finance"),
+    2: ("Domain", "Pick a specific domain"),
+    3: ("Domain Template", "Explore the domain template and choose the blocks that matter"),
+    4: ("Process Discovery", "Chatbot collects your specifics and business experience"),
+    5: ("Finalise Digital Twin", "Review, compare and finalise your customised model"),
+    6: ("Telemetry & Data Gap Analysis", "Upload CSV / XLSX / PDF / TXT / DOCX / SQL and generate the data-mapped model"),
 }
 APPS = {
     "fmcg": {

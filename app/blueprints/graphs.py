@@ -156,7 +156,7 @@ def finalize(slug):
     d = json_body()
     n = GraphService(get_db()).finalize(g.user_id, wf, domain, d.get("confirm") is True, d.get("acknowledge_warnings") is True)
     audit("ontology.finalize", "domain", slug, {"version": n})
-    return jsonify({"finalized_version": {"number": n, "label": f"KG{n}"}})
+    return jsonify({"finalized_version": {"number": n, "label": f"Version {n}"}})
 
 
 @bp.post("/reopen")

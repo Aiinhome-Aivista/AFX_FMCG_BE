@@ -60,7 +60,7 @@ class GraphRepository:
     def create_version(self, user_id, workflow_id, number, kind, parent, proposal_id, summary):
         return self.db.insert(
             "INSERT INTO user_graph_versions(user_id,workflow_id,version_number,label,kind,parent_version_number,proposal_id,summary) "
-            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (user_id, workflow_id, number, f"KG{number}", kind, parent, proposal_id, summary))
+            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (user_id, workflow_id, number, f"Version {number}", kind, parent, proposal_id, summary))
 
     def insert_nodes(self, version_id, nodes):
         self.db.executemany(
